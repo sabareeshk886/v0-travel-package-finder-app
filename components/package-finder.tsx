@@ -448,9 +448,15 @@ export default function PackageFinder() {
                 </div>
               )}
 
-              <Button onClick={handleReset} variant="outline" className="w-full bg-transparent">
-                New Search
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={() => setStep(3)} variant="outline" className="flex-1">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+                <Button onClick={handleReset} variant="outline" className="flex-1 bg-transparent">
+                  New Search
+                </Button>
+              </div>
             </div>
           )}
 
@@ -495,7 +501,7 @@ export default function PackageFinder() {
               </div>
 
               <Button onClick={handleShareFullDetails} className="w-full bg-green-600 hover:bg-green-700">
-                <Share2 className="w-4 h-4 mr-2" />
+                <Share2 className="w-4 h-4 mr-1" />
                 Share Full Details on WhatsApp
               </Button>
             </div>
