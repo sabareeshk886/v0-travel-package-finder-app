@@ -9,40 +9,41 @@ import { LogOut } from "lucide-react"
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [userType, setUserType] = useState<"regular" | "b2b">("regular")
 
-  // Check authentication on mount
   useEffect(() => {
     const authToken = localStorage.getItem("fernway_auth")
+    const storedUserType = localStorage.getItem("fernway_user_type") as "regular" | "b2b"
     setIsAuthenticated(authToken === "authenticated")
+    setUserType(storedUserType || "regular")
     setIsLoading(false)
   }, [])
 
-  const handleLogin = () => {
+  const handleLogin = (type: "regular" | "b2b") => {
+    setUserType(type)
     setIsAuthenticated(true)
   }
 
   const handleLogout = () => {
     localStorage.removeItem("fernway_auth")
+    localStorage.removeItem("fernway_user_type")
     setIsAuthenticated(false)
   }
 
-  // Show loading state while checking authentication
   if (isLoading) {
     return null
   }
 
-  // Show login form if not authenticated
   if (!isAuthenticated) {
     return <LoginForm onLogin={handleLogin} />
   }
 
-  // Show main app if authenticated
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="mb-8 text-center relative">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Fernway Holidays</h1>
-          <p className="text-muted-foreground">Package Rate Finder</p>
+          <p className="text-muted-foreground">Package Rate Finder {userType === "b2b" ? "- B2B" : ""}</p>
           <Button
             variant="outline"
             size="sm"
@@ -53,7 +54,7 @@ export default function Home() {
             Logout
           </Button>
         </div>
-        <PackageFinder />
+        <PackageFinder userType={userType} />
       </div>
     </main>
   )

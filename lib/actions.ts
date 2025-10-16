@@ -4,6 +4,7 @@ import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
 type Region = "south" | "north" | "kashmir" | "northeast" | "international"
+type UserType = "regular" | "b2b"
 
 interface PackageResult {
   sl_code: string
@@ -34,19 +35,22 @@ function getSupabaseServerClient() {
   })
 }
 
-export async function checkDatabaseData(region: Region) {
-  const supabase = getSupabaseServerClient()
+function getTableName(region: Region, userType: UserType): string {
+  return userType === "b2b" ? `b2b${region}` : region
+}
 
-  console.log("[v0] Checking database data for region:", region)
+export async function checkDatabaseData(region: Region, userType: UserType) {
+  const supabase = getSupabaseServerClient()
+  const tableName = getTableName(region, userType)
+
+  console.log("[v0] Checking database data for table:", tableName)
 
   try {
-    // Get total count
-    const { count, error: countError } = await supabase.from(region).select("*", { count: "exact", head: true })
+    const { count, error: countError } = await supabase.from(tableName).select("*", { count: "exact", head: true })
 
     console.log("[v0] Total rows in table:", count)
 
-    // Get first 5 rows
-    const { data, error } = await supabase.from(region).select("*").limit(5)
+    const { data, error } = await supabase.from(tableName).select("*").limit(5)
 
     console.log("[v0] First 5 rows:", data)
     console.log("[v0] Error:", error)
@@ -58,15 +62,16 @@ export async function checkDatabaseData(region: Region) {
   }
 }
 
-export async function searchPackages(region: Region, paxSize: string, duration?: string) {
+export async function searchPackages(region: Region, paxSize: string, userType: UserType, duration?: string) {
   const supabase = getSupabaseServerClient()
+  const tableName = getTableName(region, userType)
 
-  console.log("[v0] Search Parameters:", { region, paxSize, duration })
+  console.log("[v0] Search Parameters:", { region, paxSize, duration, userType, tableName })
 
-  await checkDatabaseData(region)
+  await checkDatabaseData(region, userType)
 
   try {
-    let query = supabase.from(region).select("*")
+    let query = supabase.from(tableName).select("*")
 
     if (region === "south" && duration) {
       const durationCode = duration.replace("D", "").replace("N", "")
@@ -116,6 +121,36 @@ export async function searchPackages(region: Region, paxSize: string, duration?:
       })
       .filter((pkg): pkg is PackageResult => pkg !== null)
 
+    if (userType === "b2b") {
+      results.sort((a, b) => {
+        const aCode = a.trip_code.toUpperCase()
+        const bCode = b.trip_code.toUpperCase()
+
+        const aIsFWN = aCode.startsWith("FWN")
+        const bIsFWN = bCode.startsWith("FWN")
+        const aIsFRJ = aCode.startsWith("FRJ")
+        const bIsFRJ = bCode.startsWith("FRJ")
+
+        // FRJ goes to the end
+        if (aIsFRJ && !bIsFRJ) return 1
+        if (!aIsFRJ && bIsFRJ) return -1
+
+        // FWN goes to the beginning
+        if (aIsFWN && !bIsFWN) return -1
+        if (!aIsFWN && bIsFWN) return 1
+
+        // Both FWN: sort by number
+        if (aIsFWN && bIsFWN) {
+          const aNum = Number.parseInt(aCode.match(/\d+/)?.[0] || "0")
+          const bNum = Number.parseInt(bCode.match(/\d+/)?.[0] || "0")
+          return aNum - bNum
+        }
+
+        // Default: alphabetical
+        return aCode.localeCompare(bCode)
+      })
+    }
+
     console.log("[v0] Final filtered results:", results)
     return results
   } catch (error) {
@@ -124,13 +159,14 @@ export async function searchPackages(region: Region, paxSize: string, duration?:
   }
 }
 
-export async function getPackageDetails(region: Region, tripCode: string) {
+export async function getPackageDetails(region: Region, tripCode: string, userType: UserType) {
   const supabase = getSupabaseServerClient()
+  const tableName = getTableName(region, userType)
 
-  console.log("[v0] Fetching package details:", { region, tripCode })
+  console.log("[v0] Fetching package details:", { region, tripCode, userType, tableName })
 
   try {
-    const { data, error } = await supabase.from(region).select("*").eq("trip_code", tripCode).single()
+    const { data, error } = await supabase.from(tableName).select("*").eq("trip_code", tripCode).single()
 
     console.log("[v0] Package details response:", { data, error })
 

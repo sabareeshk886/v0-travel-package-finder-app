@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Lock, User } from "lucide-react"
 
 interface LoginFormProps {
-  onLogin: () => void
+  onLogin: (userType: "regular" | "b2b") => void
 }
 
 export default function LoginForm({ onLogin }: LoginFormProps) {
@@ -24,11 +24,14 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     setError("")
     setIsLoading(true)
 
-    // Simple authentication check
     if (username === "fernwayteam" && password === "fernway2025") {
-      // Store auth token in localStorage
       localStorage.setItem("fernway_auth", "authenticated")
-      onLogin()
+      localStorage.setItem("fernway_user_type", "regular")
+      onLogin("regular")
+    } else if (username === "fernwayb2b" && password === "fernwayb2b") {
+      localStorage.setItem("fernway_auth", "authenticated")
+      localStorage.setItem("fernway_user_type", "b2b")
+      onLogin("b2b")
     } else {
       setError("Invalid username or password")
     }

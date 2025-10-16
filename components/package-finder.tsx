@@ -12,6 +12,7 @@ import { searchPackages, getPackageDetails } from "@/lib/actions"
 type Region = "south" | "north" | "kashmir" | "northeast" | "international"
 type Duration = "2D3N" | "3D4N" | "4D5N" | "5D6N" | "6D7N"
 type PaxSize = "20+2" | "25+2" | "30+2" | "35+3" | "40+3" | "45+3" | "50+3"
+type UserType = "regular" | "b2b"
 
 interface PackageResult {
   sl_code: string
@@ -21,7 +22,11 @@ interface PackageResult {
   itinerary?: string
 }
 
-export default function PackageFinder() {
+interface PackageFinderProps {
+  userType: UserType
+}
+
+export default function PackageFinder({ userType }: PackageFinderProps) {
   const [step, setStep] = useState(1)
   const [region, setRegion] = useState<Region | "">("")
   const [duration, setDuration] = useState<Duration | "">("")
@@ -86,7 +91,7 @@ export default function PackageFinder() {
 
     setIsLoading(true)
     try {
-      const packages = await searchPackages(region, paxSize, region === "south" ? duration : undefined)
+      const packages = await searchPackages(region, paxSize, userType, region === "south" ? duration : undefined)
       setResults(packages)
       setStep(4)
     } catch (error) {
@@ -102,7 +107,7 @@ export default function PackageFinder() {
 
     setIsLoadingDetails(true)
     try {
-      const details = await getPackageDetails(region, pkg.trip_code)
+      const details = await getPackageDetails(region, pkg.trip_code, userType)
       setSelectedPackage(details)
       setStep(5)
     } catch (error) {
