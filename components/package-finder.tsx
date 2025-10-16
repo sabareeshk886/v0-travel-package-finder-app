@@ -14,7 +14,6 @@ type Duration = "2D3N" | "3D4N" | "4D5N" | "5D6N" | "6D7N"
 type PaxSize = "20+2" | "25+2" | "30+2" | "35+3" | "40+3" | "45+3" | "50+3"
 
 interface PackageResult {
-  id: number
   sl_code: string
   trip_code: string
   details: string
@@ -103,7 +102,7 @@ export default function PackageFinder() {
 
     setIsLoadingDetails(true)
     try {
-      const details = await getPackageDetails(region, pkg.id)
+      const details = await getPackageDetails(region, pkg.trip_code)
       setSelectedPackage(details)
       setStep(5)
     } catch (error) {
@@ -408,7 +407,7 @@ export default function PackageFinder() {
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {results.map((result) => (
                     <Card
-                      key={result.id}
+                      key={result.trip_code}
                       className="border-l-4 border-l-blue-600 cursor-pointer hover:shadow-md transition-shadow"
                     >
                       <CardContent className="pt-4">
