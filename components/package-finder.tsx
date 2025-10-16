@@ -11,28 +11,7 @@ import { searchPackages, getPackageDetails } from "@/lib/actions"
 
 type Region = "south" | "north" | "kashmir" | "northeast" | "international"
 type Duration = "2D3N" | "3D4N" | "4D5N" | "5D6N" | "6D7N"
-type PaxSize =
-  | "2"
-  | "3"
-  | "4"
-  | "5"
-  | "6"
-  | "7"
-  | "8"
-  | "9"
-  | "10"
-  | "11"
-  | "12"
-  | "13"
-  | "14"
-  | "15"
-  | "20+2"
-  | "25+2"
-  | "30+2"
-  | "35+2"
-  | "40+2"
-  | "45+2"
-  | "50+2"
+type PaxSize = "20+2" | "25+2" | "30+2" | "35+3" | "40+3" | "45+3" | "50+3"
 
 interface PackageResult {
   id: number
@@ -69,27 +48,13 @@ export default function PackageFinder() {
   ]
 
   const paxSizes = [
-    { value: "2", label: "2 Pax" },
-    { value: "3", label: "3 Pax" },
-    { value: "4", label: "4 Pax" },
-    { value: "5", label: "5 Pax" },
-    { value: "6", label: "6 Pax" },
-    { value: "7", label: "7 Pax" },
-    { value: "8", label: "8 Pax" },
-    { value: "9", label: "9 Pax" },
-    { value: "10", label: "10 Pax" },
-    { value: "11", label: "11 Pax" },
-    { value: "12", label: "12 Pax" },
-    { value: "13", label: "13 Pax" },
-    { value: "14", label: "14 Pax" },
-    { value: "15", label: "15 Pax" },
     { value: "20+2", label: "20+2 Pax" },
     { value: "25+2", label: "25+2 Pax" },
     { value: "30+2", label: "30+2 Pax" },
-    { value: "35+2", label: "35+2 Pax" },
-    { value: "40+2", label: "40+2 Pax" },
-    { value: "45+2", label: "45+2 Pax" },
-    { value: "50+2", label: "50+2 Pax" },
+    { value: "35+3", label: "35+3 Pax" },
+    { value: "40+3", label: "40+3 Pax" },
+    { value: "45+3", label: "45+3 Pax" },
+    { value: "50+3", label: "50+3 Pax" },
   ]
 
   const handleRegionSelect = (value: string) => {
@@ -148,7 +113,47 @@ export default function PackageFinder() {
   }
 
   const handleShareWhatsApp = (pkg: PackageResult) => {
-    const message = `*Fernway Holidays Package*\n\n*Package:* ${pkg.trip_code}\n*Details:* ${pkg.details}\n*Rate:* ₹${pkg.rate.toLocaleString("en-IN")} per person\n*Pax:* ${paxSize}\n\nFor booking, contact Fernway Holidays!`
+    const tripCode = pkg.trip_code.replace(/^(FWS)(\d+)/, "$1 $2") // Add space after FWS
+    const lines = [`*${tripCode}*`, `*${paxSize}*`, ""]
+
+    // Parse details to separate inclusions and exclusions
+    const detailsText = pkg.details
+    const exclusionMatch = detailsText.match(/Exclusion[:\s]*(.*?)$/i)
+
+    let inclusionsText = detailsText
+    let exclusionsText = ""
+
+    if (exclusionMatch) {
+      inclusionsText = detailsText.substring(0, exclusionMatch.index).trim()
+      exclusionsText = exclusionMatch[1].trim()
+    }
+
+    // Add inclusions (split by common separators)
+    const inclusions = inclusionsText
+      .split(/[,;]/)
+      .map((s) => s.trim())
+      .filter((s) => s)
+    inclusions.forEach((item) => {
+      lines.push(item)
+    })
+
+    // Add exclusions if present
+    if (exclusionsText) {
+      lines.push("")
+      lines.push("*Exclusion*")
+      const exclusions = exclusionsText
+        .split(/[,;]/)
+        .map((s) => s.trim())
+        .filter((s) => s)
+      exclusions.forEach((item) => {
+        lines.push(item)
+      })
+    }
+
+    lines.push("")
+    lines.push(`*Rate:* ₹${pkg.rate.toLocaleString("en-IN")} per person`)
+
+    const message = lines.join("\n")
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
@@ -156,40 +161,47 @@ export default function PackageFinder() {
   const handleShareFullDetails = () => {
     if (!selectedPackage || !paxSize) return
 
-    let message = `*Fernway Holidays Package*\n\n*Package Code:* ${selectedPackage.trip_code}\n*SL Code:* ${selectedPackage.sl_code}\n*Details:* ${selectedPackage.details}\n\n*Rates for ${paxSize} Pax:* ₹${selectedPackage[paxSize]?.toLocaleString("en-IN") || "N/A"} per person\n\n*All Rates:*\n`
+    const tripCode = selectedPackage.trip_code.replace(/^(FWS)(\d+)/, "$1 $2")
+    const lines = [`*${tripCode}*`, `*${paxSize}*`, ""]
 
-    // Add all available rates
-    const paxColumns = [
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11",
-      "12",
-      "13",
-      "14",
-      "15",
-      "20+2",
-      "25+2",
-      "30+2",
-      "35+2",
-      "40+2",
-      "45+2",
-      "50+2",
-    ]
-    paxColumns.forEach((pax) => {
-      if (selectedPackage[pax]) {
-        message += `${pax} Pax: ₹${selectedPackage[pax].toLocaleString("en-IN")}\n`
-      }
+    // Parse details
+    const detailsText = selectedPackage.details
+    const exclusionMatch = detailsText.match(/Exclusion[:\s]*(.*?)$/i)
+
+    let inclusionsText = detailsText
+    let exclusionsText = ""
+
+    if (exclusionMatch) {
+      inclusionsText = detailsText.substring(0, exclusionMatch.index).trim()
+      exclusionsText = exclusionMatch[1].trim()
+    }
+
+    // Add inclusions
+    const inclusions = inclusionsText
+      .split(/[,;]/)
+      .map((s) => s.trim())
+      .filter((s) => s)
+    inclusions.forEach((item) => {
+      lines.push(item)
     })
 
-    message += `\nFor booking, contact Fernway Holidays!`
+    // Add exclusions
+    if (exclusionsText) {
+      lines.push("")
+      lines.push("*Exclusion*")
+      const exclusions = exclusionsText
+        .split(/[,;]/)
+        .map((s) => s.trim())
+        .filter((s) => s)
+      exclusions.forEach((item) => {
+        lines.push(item)
+      })
+    }
 
+    lines.push("")
+    lines.push(`*Rate:* ₹${selectedPackage[paxSize]?.toLocaleString("en-IN") || "N/A"} per person`)
+
+    const message = lines.join("\n")
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
@@ -458,29 +470,7 @@ export default function PackageFinder() {
                 <div className="border-t pt-3">
                   <p className="text-sm font-semibold mb-2">Available Rates</p>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    {[
-                      "2",
-                      "3",
-                      "4",
-                      "5",
-                      "6",
-                      "7",
-                      "8",
-                      "9",
-                      "10",
-                      "11",
-                      "12",
-                      "13",
-                      "14",
-                      "15",
-                      "20+2",
-                      "25+2",
-                      "30+2",
-                      "35+2",
-                      "40+2",
-                      "45+2",
-                      "50+2",
-                    ].map(
+                    {["20+2", "25+2", "30+2", "35+3", "40+3", "45+3", "50+3"].map(
                       (pax) =>
                         selectedPackage[pax] && (
                           <div key={pax} className="flex justify-between p-2 bg-gray-50 rounded">

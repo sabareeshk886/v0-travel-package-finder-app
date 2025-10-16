@@ -33,13 +33,39 @@ function getSupabaseServerClient() {
   })
 }
 
+export async function checkDatabaseData(region: Region) {
+  const supabase = getSupabaseServerClient()
+
+  console.log("[v0] Checking database data for region:", region)
+
+  try {
+    // Get total count
+    const { count, error: countError } = await supabase.from(region).select("*", { count: "exact", head: true })
+
+    console.log("[v0] Total rows in table:", count)
+
+    // Get first 5 rows
+    const { data, error } = await supabase.from(region).select("*").limit(5)
+
+    console.log("[v0] First 5 rows:", data)
+    console.log("[v0] Error:", error)
+
+    return { count, data, error }
+  } catch (error) {
+    console.error("[v0] Error checking database:", error)
+    return { count: 0, data: null, error }
+  }
+}
+
 export async function searchPackages(region: Region, paxSize: string, duration?: string) {
   const supabase = getSupabaseServerClient()
 
   console.log("[v0] Search Parameters:", { region, paxSize, duration })
 
+  await checkDatabaseData(region)
+
   try {
-    let query = supabase.from(region).select(`sl_code, trip_code, "${paxSize}", details`)
+    let query = supabase.from(region).select("*")
 
     if (region === "south" && duration) {
       const durationCode = duration.replace("D", "").replace("N", "")
@@ -51,6 +77,7 @@ export async function searchPackages(region: Region, paxSize: string, duration?:
     const { data, error } = await query
 
     console.log("[v0] Raw database response:", { data, error })
+    console.log("[v0] First row sample:", data?.[0])
 
     if (error) {
       console.error("[v0] Database error:", error)
@@ -73,6 +100,7 @@ export async function searchPackages(region: Region, paxSize: string, duration?:
           paxSize,
           rate,
           rateType: typeof rate,
+          allColumns: Object.keys(pkg),
         })
         if (typeof rate === "number" && rate > 0) {
           return {
