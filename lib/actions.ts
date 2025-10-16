@@ -10,6 +10,7 @@ interface PackageResult {
   trip_code: string
   details: string
   rate: number
+  itinerary?: string
 }
 
 function getSupabaseServerClient() {
@@ -108,6 +109,7 @@ export async function searchPackages(region: Region, paxSize: string, duration?:
             trip_code: pkg.trip_code,
             details: pkg.details,
             rate,
+            itinerary: pkg.itinerary,
           }
         }
         return null

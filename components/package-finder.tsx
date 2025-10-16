@@ -19,6 +19,7 @@ interface PackageResult {
   trip_code: string
   details: string
   rate: number
+  itinerary?: string
 }
 
 export default function PackageFinder() {
@@ -153,6 +154,11 @@ export default function PackageFinder() {
     lines.push("")
     lines.push(`*Rate:* ₹${pkg.rate.toLocaleString("en-IN")} per person`)
 
+    if (pkg.itinerary) {
+      lines.push("")
+      lines.push(`*Itinerary:* ${pkg.itinerary}`)
+    }
+
     const message = lines.join("\n")
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
@@ -200,6 +206,11 @@ export default function PackageFinder() {
 
     lines.push("")
     lines.push(`*Rate:* ₹${selectedPackage[paxSize]?.toLocaleString("en-IN") || "N/A"} per person`)
+
+    if (selectedPackage.itinerary) {
+      lines.push("")
+      lines.push(`*Itinerary:* ${selectedPackage.itinerary}`)
+    }
 
     const message = lines.join("\n")
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
