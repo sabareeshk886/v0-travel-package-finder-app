@@ -14,6 +14,41 @@ interface PackageResult {
   itinerary?: string
 }
 
+interface Expense {
+  name: string
+  amount: number
+}
+
+interface TripReportData {
+  customer_name: string
+  pickup_date: string
+  dropoff_date: string
+  pickup_point: string
+  destination: string
+  no_of_days: number
+  bus_details: string
+  driver_name: string
+  companion: string
+  per_head: number
+  no_of_pax: number
+  free_of_cost: number
+  total: number
+  discount: number
+  sales_by: string
+  coordinator: string
+  gst: number
+  additional_income: number
+  advance_paid: number
+  lead_type: string
+  companion_fund: number
+  total_cash: number
+  expenses: Expense[]
+  total_expenses: number
+  balance: number
+  incentive: number
+  final_profit: number
+}
+
 function getSupabaseServerClient() {
   const cookieStore = cookies()
 
@@ -39,36 +74,11 @@ function getTableName(region: Region, userType: UserType): string {
   return userType === "b2b" ? `b2b${region}` : region
 }
 
-export async function checkDatabaseData(region: Region, userType: UserType) {
-  const supabase = getSupabaseServerClient()
-  const tableName = getTableName(region, userType)
-
-  console.log("[v0] Checking database data for table:", tableName)
-
-  try {
-    const { count, error: countError } = await supabase.from(tableName).select("*", { count: "exact", head: true })
-
-    console.log("[v0] Total rows in table:", count)
-
-    const { data, error } = await supabase.from(tableName).select("*").limit(5)
-
-    console.log("[v0] First 5 rows:", data)
-    console.log("[v0] Error:", error)
-
-    return { count, data, error }
-  } catch (error) {
-    console.error("[v0] Error checking database:", error)
-    return { count: 0, data: null, error }
-  }
-}
-
 export async function searchPackages(region: Region, paxSize: string, userType: UserType, duration?: string) {
   const supabase = getSupabaseServerClient()
   const tableName = getTableName(region, userType)
 
   console.log("[v0] Search Parameters:", { region, paxSize, duration, userType, tableName })
-
-  await checkDatabaseData(region, userType)
 
   try {
     let query = supabase.from(tableName).select("*")
@@ -83,11 +93,15 @@ export async function searchPackages(region: Region, paxSize: string, userType: 
     const { data, error } = await query
 
     console.log("[v0] Raw database response:", { data, error })
-    console.log("[v0] First row sample:", data?.[0])
 
     if (error) {
+      // Check if error is "table not found" (PGRST205)
+      if (error.code === "PGRST205") {
+        console.log("[v0] Table does not exist:", tableName)
+        return []
+      }
       console.error("[v0] Database error:", error)
-      throw error
+      return []
     }
 
     if (!data) {
@@ -99,15 +113,22 @@ export async function searchPackages(region: Region, paxSize: string, userType: 
 
     const results: PackageResult[] = data
       .map((pkg: any) => {
-        const rate = pkg[paxSize]
-        console.log("[v0] Processing package:", {
-          sl_code: pkg.sl_code,
-          trip_code: pkg.trip_code,
-          paxSize,
-          rate,
-          rateType: typeof rate,
-          allColumns: Object.keys(pkg),
-        })
+        let rate: number | undefined
+        let columnName: string
+
+        if (region === "kashmir") {
+          const [paxNum, category] = paxSize.split("_")
+          if (paxNum === "seasonal") {
+            columnName = `seasonal_${category}`
+          } else {
+            columnName = `pax_${paxNum.padStart(2, "0")}_${category}`
+          }
+          rate = pkg[columnName]
+        } else {
+          columnName = paxSize
+          rate = pkg[paxSize]
+        }
+
         if (typeof rate === "number" && rate > 0) {
           return {
             sl_code: pkg.sl_code,
@@ -131,22 +152,18 @@ export async function searchPackages(region: Region, paxSize: string, userType: 
         const aIsFRJ = aCode.startsWith("FRJ")
         const bIsFRJ = bCode.startsWith("FRJ")
 
-        // FRJ goes to the end
         if (aIsFRJ && !bIsFRJ) return 1
         if (!aIsFRJ && bIsFRJ) return -1
 
-        // FWN goes to the beginning
         if (aIsFWN && !bIsFWN) return -1
         if (!aIsFWN && bIsFWN) return 1
 
-        // Both FWN: sort by number
         if (aIsFWN && bIsFWN) {
           const aNum = Number.parseInt(aCode.match(/\d+/)?.[0] || "0")
           const bNum = Number.parseInt(bCode.match(/\d+/)?.[0] || "0")
           return aNum - bNum
         }
 
-        // Default: alphabetical
         return aCode.localeCompare(bCode)
       })
     }
@@ -171,13 +188,40 @@ export async function getPackageDetails(region: Region, tripCode: string, userTy
     console.log("[v0] Package details response:", { data, error })
 
     if (error) {
+      if (error.code === "PGRST205") {
+        console.log("[v0] Table does not exist:", tableName)
+        return null
+      }
       console.error("[v0] Error fetching details:", error)
-      throw error
+      return null
     }
 
     return data
   } catch (error) {
     console.error("[v0] Error fetching package details:", error)
     return null
+  }
+}
+
+export async function submitTripReport(data: TripReportData) {
+  const supabase = getSupabaseServerClient()
+
+  try {
+    const { error } = await supabase.from("trip_reports").insert([
+      {
+        ...data,
+        created_at: new Date().toISOString(),
+      },
+    ])
+
+    if (error) {
+      console.error("[v0] Error submitting trip report:", error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Error submitting trip report:", error)
+    return { success: false, error: "Failed to submit trip report" }
   }
 }
