@@ -48,9 +48,9 @@ export default function VendorDetailPage() {
     room_capacity: "",
     price_per_night: "",
     extra_bed_price: "",
-    child_without_bed_rate: "",
-    child_with_bed_rate: "",
-    adult_rate: "",
+    child_6_12_without_bed_rate: "",
+    child_6_12_with_bed_rate: "",
+    adult_above_12_rate: "",
     availability_status: "Available",
   })
 
@@ -173,11 +173,13 @@ export default function VendorDetailPage() {
       room_capacity: roomData.room_capacity ? Number.parseInt(roomData.room_capacity) : null,
       price_per_night: roomData.price_per_night ? Number.parseFloat(roomData.price_per_night) : null,
       extra_bed_price: roomData.extra_bed_price ? Number.parseFloat(roomData.extra_bed_price) : null,
-      child_without_bed_rate: roomData.child_without_bed_rate
-        ? Number.parseFloat(roomData.child_without_bed_rate)
+      child_6_12_without_bed_rate: roomData.child_6_12_without_bed_rate
+        ? Number.parseFloat(roomData.child_6_12_without_bed_rate)
         : null,
-      child_with_bed_rate: roomData.child_with_bed_rate ? Number.parseFloat(roomData.child_with_bed_rate) : null,
-      adult_rate: roomData.adult_rate ? Number.parseFloat(roomData.adult_rate) : null,
+      child_6_12_with_bed_rate: roomData.child_6_12_with_bed_rate
+        ? Number.parseFloat(roomData.child_6_12_with_bed_rate)
+        : null,
+      adult_above_12_rate: roomData.adult_above_12_rate ? Number.parseFloat(roomData.adult_above_12_rate) : null,
       availability_status: roomData.availability_status,
     }
 
@@ -196,9 +198,9 @@ export default function VendorDetailPage() {
         room_capacity: "",
         price_per_night: "",
         extra_bed_price: "",
-        child_without_bed_rate: "",
-        child_with_bed_rate: "",
-        adult_rate: "",
+        child_6_12_without_bed_rate: "",
+        child_6_12_with_bed_rate: "",
+        adult_above_12_rate: "",
         availability_status: "Available",
       })
       setShowRoomForm(false)
@@ -219,9 +221,9 @@ export default function VendorDetailPage() {
       room_capacity: room.room_capacity?.toString() || "",
       price_per_night: room.price_per_night?.toString() || "",
       extra_bed_price: room.extra_bed_price?.toString() || "",
-      child_without_bed_rate: room.child_without_bed_rate?.toString() || "",
-      child_with_bed_rate: room.child_with_bed_rate?.toString() || "",
-      adult_rate: room.adult_rate?.toString() || "",
+      child_6_12_without_bed_rate: room.child_6_12_without_bed_rate?.toString() || "",
+      child_6_12_with_bed_rate: room.child_6_12_with_bed_rate?.toString() || "",
+      adult_above_12_rate: room.adult_above_12_rate?.toString() || "",
       availability_status: room.availability_status || "Available",
     })
     setShowRoomForm(true)
@@ -249,9 +251,9 @@ export default function VendorDetailPage() {
       room_capacity: "",
       price_per_night: "",
       extra_bed_price: "",
-      child_without_bed_rate: "",
-      child_with_bed_rate: "",
-      adult_rate: "",
+      child_6_12_without_bed_rate: "",
+      child_6_12_with_bed_rate: "",
+      adult_above_12_rate: "",
       availability_status: "Available",
     })
   }
@@ -596,33 +598,33 @@ export default function VendorDetailPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="child_without_bed_rate">Child 6-12 yrs Without Bed (₹)</Label>
+                        <Label htmlFor="child_6_12_without_bed_rate">Child 6-12 yrs Without Bed (₹)</Label>
                         <Input
-                          id="child_without_bed_rate"
+                          id="child_6_12_without_bed_rate"
                           type="number"
                           step="0.01"
-                          value={roomData.child_without_bed_rate}
-                          onChange={(e) => setRoomData({ ...roomData, child_without_bed_rate: e.target.value })}
+                          value={roomData.child_6_12_without_bed_rate}
+                          onChange={(e) => setRoomData({ ...roomData, child_6_12_without_bed_rate: e.target.value })}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="child_with_bed_rate">Child 6-12 yrs With Bed (₹)</Label>
+                        <Label htmlFor="child_6_12_with_bed_rate">Child 6-12 yrs With Bed (₹)</Label>
                         <Input
-                          id="child_with_bed_rate"
+                          id="child_6_12_with_bed_rate"
                           type="number"
                           step="0.01"
-                          value={roomData.child_with_bed_rate}
-                          onChange={(e) => setRoomData({ ...roomData, child_with_bed_rate: e.target.value })}
+                          value={roomData.child_6_12_with_bed_rate}
+                          onChange={(e) => setRoomData({ ...roomData, child_6_12_with_bed_rate: e.target.value })}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="adult_rate">Adult Above 12 yrs (₹)</Label>
+                        <Label htmlFor="adult_above_12_rate">Adult Above 12 yrs (₹)</Label>
                         <Input
-                          id="adult_rate"
+                          id="adult_above_12_rate"
                           type="number"
                           step="0.01"
-                          value={roomData.adult_rate}
-                          onChange={(e) => setRoomData({ ...roomData, adult_rate: e.target.value })}
+                          value={roomData.adult_above_12_rate}
+                          onChange={(e) => setRoomData({ ...roomData, adult_above_12_rate: e.target.value })}
                         />
                       </div>
                       <div className="space-y-2">
@@ -670,11 +672,13 @@ export default function VendorDetailPage() {
                             </div>
                             <div className="mt-2 text-xs text-muted-foreground space-y-1">
                               {room.extra_bed_price && <p>Extra Bed: ₹{room.extra_bed_price}</p>}
-                              {room.child_without_bed_rate && (
-                                <p>Child 6-12 yrs Without Bed: ₹{room.child_without_bed_rate}</p>
+                              {room.child_6_12_without_bed_rate && (
+                                <p>Child 6-12 yrs Without Bed: ₹{room.child_6_12_without_bed_rate}</p>
                               )}
-                              {room.child_with_bed_rate && <p>Child 6-12 yrs With Bed: ₹{room.child_with_bed_rate}</p>}
-                              {room.adult_rate && <p>Adult Above 12 yrs: ₹{room.adult_rate}</p>}
+                              {room.child_6_12_with_bed_rate && (
+                                <p>Child 6-12 yrs With Bed: ₹{room.child_6_12_with_bed_rate}</p>
+                              )}
+                              {room.adult_above_12_rate && <p>Adult Above 12 yrs: ₹{room.adult_above_12_rate}</p>}
                               {room.availability_status && (
                                 <p
                                   className={
