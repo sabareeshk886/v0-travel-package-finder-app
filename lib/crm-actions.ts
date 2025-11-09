@@ -654,6 +654,176 @@ export async function deleteExpense(id: string) {
   return { success: true }
 }
 
+// Hotel Management Actions
+
+export async function getHotels(filters?: {
+  location?: string
+  category?: string
+  isActive?: boolean
+  search?: string
+}) {
+  const supabase = await createClient()
+
+  let query = supabase.from("hotels").select("*").order("hotel_name")
+
+  if (filters?.location) {
+    query = query.eq("location", filters.location)
+  }
+
+  if (filters?.category) {
+    query = query.eq("hotel_category", filters.category)
+  }
+
+  if (filters?.isActive !== undefined) {
+    query = query.eq("is_active", filters.isActive)
+  }
+
+  if (filters?.search) {
+    query = query.or(
+      `hotel_name.ilike.%${filters.search}%,location.ilike.%${filters.search}%,contact_person.ilike.%${filters.search}%`,
+    )
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("[v0] Error fetching hotels:", error)
+    return { success: false, error: error.message, data: [] }
+  }
+
+  return { success: true, data: data || [] }
+}
+
+export async function getHotel(id: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotels").select("*").eq("id", id).single()
+
+  if (error) {
+    console.error("[v0] Error fetching hotel:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function createHotel(hotelData: {
+  hotel_name: string
+  location: string
+  contact_person?: string
+  contact_number: string
+  email?: string
+  hotel_category: string
+  notes?: string
+}) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotels").insert([hotelData]).select().single()
+
+  if (error) {
+    console.error("[v0] Error creating hotel:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function updateHotel(id: string, updates: any) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotels").update(updates).eq("id", id).select().single()
+
+  if (error) {
+    console.error("[v0] Error updating hotel:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function deleteHotel(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("hotels").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting hotel:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}
+
+// Hotel Room Configuration Actions
+
+export async function getRoomConfigs(hotelId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("hotel_room_configs")
+    .select("*")
+    .eq("hotel_id", hotelId)
+    .order("created_at")
+
+  if (error) {
+    console.error("[v0] Error fetching room configs:", error)
+    return { success: false, error: error.message, data: [] }
+  }
+
+  return { success: true, data: data || [] }
+}
+
+export async function createRoomConfig(roomConfigData: {
+  hotel_id: string
+  room_category: string
+  room_sharing_type: string
+  meal_plan: string
+  room_capacity: number
+  price_per_night: number
+  extra_bed_price?: number
+  child_policy?: string
+  availability_status?: string
+}) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotel_room_configs").insert([roomConfigData]).select().single()
+
+  if (error) {
+    console.error("[v0] Error creating room config:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function updateRoomConfig(id: string, updates: any) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotel_room_configs").update(updates).eq("id", id).select().single()
+
+  if (error) {
+    console.error("[v0] Error updating room config:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function deleteRoomConfig(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("hotel_room_configs").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting room config:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}
+
+// General CRM Table Check
+
 export async function checkCRMTablesExist() {
   const supabase = await createClient()
 
