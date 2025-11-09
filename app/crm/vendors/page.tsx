@@ -35,7 +35,7 @@ export default function VendorsPage() {
   const getCategoryColor = (category: string) => {
     const colors: any = {
       Hotel: "bg-blue-100 text-blue-700",
-      Transport: "bg-green-100 text-green-700",
+      Transportation: "bg-green-100 text-green-700",
       Restaurant: "bg-orange-100 text-orange-700",
       Guide: "bg-purple-100 text-purple-700",
       "Activity Provider": "bg-pink-100 text-pink-700",
@@ -82,7 +82,7 @@ export default function VendorsPage() {
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem value="Hotel">Hotel</SelectItem>
-                <SelectItem value="Transport">Transport</SelectItem>
+                <SelectItem value="Transportation">Transportation</SelectItem>
                 <SelectItem value="Restaurant">Restaurant</SelectItem>
                 <SelectItem value="Guide">Guide</SelectItem>
                 <SelectItem value="Activity Provider">Activity Provider</SelectItem>
@@ -128,7 +128,12 @@ export default function VendorsPage() {
                           {vendor.category}
                         </span>
                       </div>
-                      {vendor.rating && (
+                      {vendor.category === "Hotel" && vendor.hotel_category && (
+                        <div className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                          {vendor.hotel_category}
+                        </div>
+                      )}
+                      {vendor.category !== "Hotel" && vendor.rating && (
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                           <span className="text-sm font-medium">{vendor.rating}</span>

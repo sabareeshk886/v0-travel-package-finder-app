@@ -370,23 +370,49 @@ export async function getVendors(filters?: {
   return { success: true, data: data || [] }
 }
 
-export async function createVendor(vendorData: any) {
+export async function createVendor(vendorData: any, roomConfigs?: any[]) {
   try {
-    console.log("[v0] createVendor called with:", vendorData)
+    console.log("[v0] createVendor called with:", vendorData, "roomConfigs:", roomConfigs)
     const supabase = await createClient()
     console.log("[v0] Supabase client created")
 
-    const { data, error } = await supabase.from("vendors").insert([vendorData]).select().single()
+    const { data: vendor, error: vendorError } = await supabase.from("vendors").insert([vendorData]).select().single()
 
-    console.log("[v0] Insert result - data:", data, "error:", error)
+    console.log("[v0] Vendor insert result - data:", vendor, "error:", vendorError)
 
-    if (error) {
-      console.error("[v0] Error creating vendor:", error)
-      return { success: false, error: error.message }
+    if (vendorError) {
+      console.error("[v0] Error creating vendor:", vendorError)
+      return { success: false, error: vendorError.message }
     }
 
-    console.log("[v0] Vendor created successfully:", data)
-    return { success: true, data }
+    if (vendorData.category === "Hotel" && roomConfigs && roomConfigs.length > 0 && vendor) {
+      const roomConfigsWithVendorId = roomConfigs.map((config) => ({
+        vendor_id: vendor.id,
+        room_category: config.room_category,
+        room_sharing_type: config.room_sharing_type,
+        meal_plan: config.meal_plan,
+        room_capacity: config.room_capacity ? Number.parseInt(config.room_capacity) : null,
+        price_per_night: config.price_per_night ? Number.parseFloat(config.price_per_night) : null,
+        extra_bed_price: config.extra_bed_price ? Number.parseFloat(config.extra_bed_price) : null,
+        child_policy: config.child_policy || null,
+        availability_status: config.availability_status || "Available",
+      }))
+
+      const { error: configError } = await supabase.from("hotel_room_configs").insert(roomConfigsWithVendorId)
+
+      if (configError) {
+        console.error("[v0] Error creating room configs:", configError)
+        // Vendor is created but room configs failed - return partial success
+        return {
+          success: true,
+          data: vendor,
+          warning: `Vendor created but room configurations failed: ${configError.message}`,
+        }
+      }
+    }
+
+    console.log("[v0] Vendor created successfully:", vendor)
+    return { success: true, data: vendor }
   } catch (err) {
     console.error("[v0] Exception in createVendor:", err)
     return { success: false, error: err instanceof Error ? err.message : "Unknown error" }
@@ -413,6 +439,74 @@ export async function deleteVendor(id: string) {
 
   if (error) {
     console.error("[v0] Error deleting vendor:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}
+
+// Vendor Room Configuration Actions
+
+export async function getVendorRoomConfigs(vendorId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("hotel_room_configs")
+    .select("*")
+    .eq("vendor_id", vendorId)
+    .order("created_at")
+
+  if (error) {
+    console.error("[v0] Error fetching vendor room configs:", error)
+    return { success: false, error: error.message, data: [] }
+  }
+
+  return { success: true, data: data || [] }
+}
+
+export async function createVendorRoomConfig(roomConfigData: {
+  vendor_id: string
+  room_category: string
+  room_sharing_type: string
+  meal_plan: string
+  room_capacity: number
+  price_per_night: number
+  extra_bed_price?: number
+  child_policy?: string
+  availability_status?: string
+}) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotel_room_configs").insert([roomConfigData]).select().single()
+
+  if (error) {
+    console.error("[v0] Error creating vendor room config:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function updateVendorRoomConfig(id: string, updates: any) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("hotel_room_configs").update(updates).eq("id", id).select().single()
+
+  if (error) {
+    console.error("[v0] Error updating vendor room config:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function deleteVendorRoomConfig(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("hotel_room_configs").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting vendor room config:", error)
     return { success: false, error: error.message }
   }
 
@@ -753,8 +847,6 @@ export async function deleteHotel(id: string) {
 
   return { success: true }
 }
-
-// Hotel Room Configuration Actions
 
 export async function getRoomConfigs(hotelId: string) {
   const supabase = await createClient()
