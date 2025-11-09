@@ -370,11 +370,24 @@ export async function getVendors(filters?: {
   return { success: true, data: data || [] }
 }
 
-export async function createVendor(vendorData: any, roomConfigs?: any[]) {
+export async function createVendor(vendorData: any, roomConfigs?: any[], hotelCategory?: string) {
   try {
-    console.log("[v0] createVendor called with:", vendorData, "roomConfigs:", roomConfigs)
+    console.log(
+      "[v0] createVendor called with:",
+      vendorData,
+      "roomConfigs:",
+      roomConfigs,
+      "hotelCategory:",
+      hotelCategory,
+    )
     const supabase = await createClient()
     console.log("[v0] Supabase client created")
+
+    // If hotel category is provided, add it to notes field since vendors table doesn't have hotel_category column
+    if (hotelCategory && vendorData.category === "Hotel") {
+      const categoryNote = `Hotel Category: ${hotelCategory}`
+      vendorData.notes = vendorData.notes ? `${categoryNote}\n${vendorData.notes}` : categoryNote
+    }
 
     const { data: vendor, error: vendorError } = await supabase.from("vendors").insert([vendorData]).select().single()
 

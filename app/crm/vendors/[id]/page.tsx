@@ -120,7 +120,8 @@ export default function VendorDetailPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold">{vendor.vendor_name}</h1>
-            <p className="text-muted-foreground">Vendor Details</p>
+            {vendor.place && <p className="text-muted-foreground">📍 {vendor.place}</p>}
+            {!vendor.place && <p className="text-muted-foreground">Vendor Details</p>}
           </div>
         </div>
         <span

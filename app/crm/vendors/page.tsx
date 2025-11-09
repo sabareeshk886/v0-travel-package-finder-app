@@ -120,17 +120,18 @@ export default function VendorsPage() {
                 <CardContent className="pt-6">
                   <div className="space-y-4">
                     <div className="flex items-start justify-between">
-                      <div>
+                      <div className="flex-1">
                         <h3 className="text-lg font-semibold">{vendor.vendor_name}</h3>
+                        {vendor.place && <p className="text-sm text-muted-foreground mt-1">📍 {vendor.place}</p>}
                         <span
                           className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium mt-2 ${getCategoryColor(vendor.category)}`}
                         >
                           {vendor.category}
                         </span>
                       </div>
-                      {vendor.category === "Hotel" && vendor.hotel_category && (
+                      {vendor.category === "Hotel" && vendor.notes?.includes("Hotel Category:") && (
                         <div className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                          {vendor.hotel_category}
+                          {vendor.notes.split("Hotel Category:")[1]?.split("\n")[0]?.trim()}
                         </div>
                       )}
                       {vendor.category !== "Hotel" && vendor.rating && (

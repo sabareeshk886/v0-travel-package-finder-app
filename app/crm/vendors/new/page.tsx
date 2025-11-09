@@ -20,6 +20,7 @@ export default function NewVendorPage() {
 
   const [formData, setFormData] = useState({
     vendor_name: "",
+    place: "",
     category: "Hotel",
     contact_person: "",
     phone: "",
@@ -41,9 +42,17 @@ export default function NewVendorPage() {
 
     try {
       const vendorData: any = {
-        ...formData,
+        vendor_name: formData.vendor_name,
+        place: formData.place,
+        category: formData.category,
+        contact_person: formData.contact_person,
+        phone: formData.phone,
+        email: formData.email,
+        address: formData.address,
+        gst_number: formData.gst_number,
+        payment_terms: formData.payment_terms,
         rating: formData.category !== "Hotel" && formData.rating ? Number.parseInt(formData.rating) : null,
-        hotel_category: formData.category === "Hotel" ? formData.hotel_category : null,
+        notes: formData.notes,
         is_active: true,
       }
 
@@ -56,7 +65,11 @@ export default function NewVendorPage() {
 
       console.log("[v0] Creating vendor with data:", vendorData)
 
-      const result = await createVendor(vendorData, formData.category === "Hotel" ? roomConfigs : undefined)
+      const result = await createVendor(
+        vendorData,
+        formData.category === "Hotel" ? roomConfigs : undefined,
+        formData.category === "Hotel" ? formData.hotel_category : undefined,
+      )
 
       console.log("[v0] Create vendor result:", result)
 
@@ -145,6 +158,19 @@ export default function NewVendorPage() {
                     onChange={(e) => handleChange("vendor_name", e.target.value)}
                     required
                     placeholder="Enter vendor/property name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="place">
+                    Place <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="place"
+                    value={formData.place}
+                    onChange={(e) => handleChange("place", e.target.value)}
+                    required
+                    placeholder="Location/City"
                   />
                 </div>
 
