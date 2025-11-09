@@ -103,7 +103,9 @@ export default function NewVendorPage() {
         room_capacity: "",
         price_per_night: "",
         extra_bed_price: "",
-        child_policy: "",
+        child_6_12_without_bed_rate: "",
+        child_6_12_with_bed_rate: "",
+        adult_above_12_rate: "",
         availability_status: "Available",
       },
     ])
@@ -414,12 +416,33 @@ export default function NewVendorPage() {
                             />
                           </div>
 
-                          <div className="space-y-2 md:col-span-2">
-                            <Label>Child Policy</Label>
+                          <div className="space-y-2">
+                            <Label>Child 6-12 yrs Without Bed (₹)</Label>
                             <Input
-                              value={config.child_policy}
-                              onChange={(e) => updateRoomConfig(index, "child_policy", e.target.value)}
-                              placeholder="e.g., Below 5 years free, 5-12 years 50%"
+                              type="number"
+                              value={config.child_6_12_without_bed_rate}
+                              onChange={(e) => updateRoomConfig(index, "child_6_12_without_bed_rate", e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Child 6-12 yrs With Bed (₹)</Label>
+                            <Input
+                              type="number"
+                              value={config.child_6_12_with_bed_rate}
+                              onChange={(e) => updateRoomConfig(index, "child_6_12_with_bed_rate", e.target.value)}
+                              placeholder="0"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Adult Above 12 yrs (₹)</Label>
+                            <Input
+                              type="number"
+                              value={config.adult_above_12_rate}
+                              onChange={(e) => updateRoomConfig(index, "adult_above_12_rate", e.target.value)}
+                              placeholder="0"
                             />
                           </div>
 

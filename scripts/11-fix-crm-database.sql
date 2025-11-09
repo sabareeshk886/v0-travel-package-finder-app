@@ -1,13 +1,27 @@
 -- Fix CRM Database Schema
 -- This script adds missing columns and tables to make the CRM fully functional
 
--- 1. Add assigned_to_name column to leads table
-ALTER TABLE leads 
-ADD COLUMN IF NOT EXISTS assigned_to_name TEXT;
+-- 1. Add assigned_to_name column to leads table if it doesn't exist
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'leads' AND column_name = 'assigned_to_name'
+  ) THEN
+    ALTER TABLE leads ADD COLUMN assigned_to_name TEXT;
+  END IF;
+END $$;
 
--- Make created_by nullable for leads
-ALTER TABLE leads 
-ALTER COLUMN created_by DROP NOT NULL;
+-- Make created_by nullable for leads if column exists
+DO $$ 
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'leads' AND column_name = 'created_by'
+  ) THEN
+    ALTER TABLE leads ALTER COLUMN created_by DROP NOT NULL;
+  END IF;
+END $$;
 
 -- 2. Create expenses table if it doesn't exist
 CREATE TABLE IF NOT EXISTS expenses (
@@ -20,6 +34,7 @@ CREATE TABLE IF NOT EXISTS expenses (
   amount DECIMAL(10, 2) NOT NULL,
   payment_mode TEXT NOT NULL,
   payment_status TEXT NOT NULL DEFAULT 'paid',
+  expense_number TEXT,
   notes TEXT,
   created_by UUID REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -35,18 +50,13 @@ CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);
 -- Disable RLS on expenses table for now
 ALTER TABLE expenses DISABLE ROW LEVEL SECURITY;
 
--- 3. Make created_by nullable for payments table
-ALTER TABLE payments 
-ALTER COLUMN created_by DROP NOT NULL;
-
--- Add index on assigned_to_name for leads
-CREATE INDEX IF NOT EXISTS idx_leads_assigned_to_name ON leads(assigned_to_name);
-
--- Success message
-DO $$
+-- Add index on assigned_to_name for leads if column exists
+DO $$ 
 BEGIN
-  RAISE NOTICE 'CRM database schema updated successfully!';
-  RAISE NOTICE '- Added assigned_to_name column to leads table';
-  RAISE NOTICE '- Created expenses table';
-  RAISE NOTICE '- Made created_by fields nullable';
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'leads' AND column_name = 'assigned_to_name'
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_leads_assigned_to_name ON leads(assigned_to_name);
+  END IF;
 END $$;
