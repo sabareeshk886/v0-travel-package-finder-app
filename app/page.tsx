@@ -5,7 +5,7 @@ import PackageFinder from "@/components/package-finder"
 import LoginForm from "@/components/login-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { LogOut, Search, FileText } from "lucide-react"
+import { LogOut, Search, FileText, Users } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function Home() {
@@ -58,7 +58,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             <Card
               className="cursor-pointer hover:shadow-xl transition-shadow border-2 hover:border-blue-400"
               onClick={() => setCurrentView("package-finder")}
@@ -82,6 +82,19 @@ export default function Home() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Trip Report</h2>
                 <p className="text-muted-foreground">Submit trip details and expenses</p>
+              </CardContent>
+            </Card>
+
+            <Card
+              className="cursor-pointer hover:shadow-xl transition-shadow border-2 hover:border-purple-400"
+              onClick={() => router.push("/crm")}
+            >
+              <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                  <Users className="w-10 h-10 text-purple-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">CRM System</h2>
+                <p className="text-muted-foreground">Manage leads, trips & vendors</p>
               </CardContent>
             </Card>
           </div>

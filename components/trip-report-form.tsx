@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { submitTripReport } from "@/lib/actions"
+import { submitTripReport, submitRoomBooking } from "@/lib/actions"
 import { Loader2, Plus, X } from "lucide-react"
 
 interface Expense {
@@ -16,10 +16,11 @@ interface Expense {
 }
 
 export default function TripReportForm() {
+  const [bookingType, setBookingType] = useState<"bus" | "room" | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
 
-  // Trip Details
+  // Bus Booking Fields
   const [customerName, setCustomerName] = useState("")
   const [pickupDate, setPickupDate] = useState("")
   const [dropoffDate, setDropoffDate] = useState("")
@@ -29,27 +30,38 @@ export default function TripReportForm() {
   const [busDetails, setBusDetails] = useState("")
   const [driverName, setDriverName] = useState("")
   const [companion, setCompanion] = useState("")
-
-  // Financial Details
   const [perHead, setPerHead] = useState("")
   const [noOfPax, setNoOfPax] = useState("")
   const [freeOfCost, setFreeOfCost] = useState("")
-  const [total, setTotal] = useState("")
   const [discount, setDiscount] = useState("")
   const [salesBy, setSalesBy] = useState("")
   const [otherSalesName, setOtherSalesName] = useState("")
   const [coordinator, setCoordinator] = useState("")
   const [gst, setGst] = useState("")
   const [additionalIncome, setAdditionalIncome] = useState("")
-
   const [advancePaid, setAdvancePaid] = useState("")
-
   const [leadType, setLeadType] = useState<"company" | "personal">("company")
   const [companionFund, setCompanionFund] = useState("")
-
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [expenseName, setExpenseName] = useState("")
   const [expenseAmount, setExpenseAmount] = useState("")
+
+  const [checkInDate, setCheckInDate] = useState("")
+  const [checkOutDate, setCheckOutDate] = useState("")
+  const [place, setPlace] = useState("")
+  const [noOfAdults, setNoOfAdults] = useState("")
+  const [noOfKids, setNoOfKids] = useState("")
+  const [propertyName, setPropertyName] = useState("")
+  const [roomSalesBy, setRoomSalesBy] = useState("")
+  const [roomOtherSalesName, setRoomOtherSalesName] = useState("")
+  const [sellingRate, setSellingRate] = useState("")
+  const [b2bRate, setB2bRate] = useState("")
+
+  const calculateRoomProfit = () => {
+    const selling = Number.parseFloat(sellingRate) || 0
+    const b2b = Number.parseFloat(b2bRate) || 0
+    return selling - b2b
+  }
 
   const calculateTotal = () => {
     const perHeadVal = Number.parseFloat(perHead) || 0
@@ -113,7 +125,7 @@ export default function TripReportForm() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleBusBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitSuccess(false)
@@ -153,6 +165,7 @@ export default function TripReportForm() {
 
       if (result.success) {
         setSubmitSuccess(true)
+        // Reset bus booking fields
         setCustomerName("")
         setPickupDate("")
         setDropoffDate("")
@@ -165,7 +178,6 @@ export default function TripReportForm() {
         setPerHead("")
         setNoOfPax("")
         setFreeOfCost("")
-        setTotal("")
         setDiscount("")
         setSalesBy("")
         setOtherSalesName("")
@@ -180,15 +192,253 @@ export default function TripReportForm() {
         setTimeout(() => setSubmitSuccess(false), 3000)
       }
     } catch (error) {
-      console.error("Error submitting trip report:", error)
+      console.error("Error submitting bus booking:", error)
     } finally {
       setIsSubmitting(false)
     }
   }
 
+  const handleRoomBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitSuccess(false)
+
+    try {
+      const finalSalesBy = roomSalesBy === "OTHER" ? roomOtherSalesName : roomSalesBy
+
+      const result = await submitRoomBooking({
+        check_in_date: checkInDate,
+        check_out_date: checkOutDate,
+        place: place,
+        no_of_adults: Number.parseInt(noOfAdults) || 0,
+        no_of_kids: Number.parseInt(noOfKids) || 0,
+        property_name: propertyName,
+        sales_by: finalSalesBy,
+        selling_rate: Number.parseFloat(sellingRate) || 0,
+        b2b_rate: Number.parseFloat(b2bRate) || 0,
+        profit: calculateRoomProfit(),
+      })
+
+      if (result.success) {
+        setSubmitSuccess(true)
+        // Reset room booking fields
+        setCheckInDate("")
+        setCheckOutDate("")
+        setPlace("")
+        setNoOfAdults("")
+        setNoOfKids("")
+        setPropertyName("")
+        setRoomSalesBy("")
+        setRoomOtherSalesName("")
+        setSellingRate("")
+        setB2bRate("")
+
+        setTimeout(() => setSubmitSuccess(false), 3000)
+      }
+    } catch (error) {
+      console.error("Error submitting room booking:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (!bookingType) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Select Booking Type</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button type="button" onClick={() => setBookingType("bus")} className="h-32 text-xl" variant="outline">
+              Bus Booking
+            </Button>
+            <Button type="button" onClick={() => setBookingType("room")} className="h-32 text-xl" variant="outline">
+              Room Booking
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (bookingType === "room") {
+    return (
+      <form onSubmit={handleRoomBookingSubmit}>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Room Booking</h2>
+            <Button type="button" variant="outline" onClick={() => setBookingType(null)}>
+              Change Booking Type
+            </Button>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Booking Details</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="checkInDate">Check-in Date</Label>
+                <Input
+                  id="checkInDate"
+                  type="date"
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="checkOutDate">Check-out Date</Label>
+                <Input
+                  id="checkOutDate"
+                  type="date"
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="place">Place</Label>
+                <Input id="place" value={place} onChange={(e) => setPlace(e.target.value)} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="propertyName">Property Name</Label>
+                <Input
+                  id="propertyName"
+                  value={propertyName}
+                  onChange={(e) => setPropertyName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="noOfAdults">No. of Adults</Label>
+                <Input
+                  id="noOfAdults"
+                  type="number"
+                  value={noOfAdults}
+                  onChange={(e) => setNoOfAdults(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="noOfKids">No. of Kids</Label>
+                <Input
+                  id="noOfKids"
+                  type="number"
+                  value={noOfKids}
+                  onChange={(e) => setNoOfKids(e.target.value)}
+                  placeholder="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="roomSalesBy">Sales By</Label>
+                <select
+                  id="roomSalesBy"
+                  value={roomSalesBy}
+                  onChange={(e) => setRoomSalesBy(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  required
+                >
+                  <option value="">Select Sales Person</option>
+                  <option value="ANEES">ANEES</option>
+                  <option value="NIYAS">NIYAS</option>
+                  <option value="SABAREESH">SABAREESH</option>
+                  <option value="ARJUN">ARJUN</option>
+                  <option value="SREEHARI">SREEHARI</option>
+                  <option value="ANURANJ">ANURANJ</option>
+                  <option value="PRETHUSH">PRETHUSH</option>
+                  <option value="OTHER">OTHER</option>
+                </select>
+              </div>
+              {roomSalesBy === "OTHER" && (
+                <div className="space-y-2">
+                  <Label htmlFor="roomOtherSalesName">Other Sales Person Name</Label>
+                  <Input
+                    id="roomOtherSalesName"
+                    value={roomOtherSalesName}
+                    onChange={(e) => setRoomOtherSalesName(e.target.value)}
+                    placeholder="Enter name"
+                    required
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Financial Details</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sellingRate">Selling Rate (₹)</Label>
+                <Input
+                  id="sellingRate"
+                  type="number"
+                  step="0.01"
+                  value={sellingRate}
+                  onChange={(e) => setSellingRate(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="b2bRate">B2B Rate (₹)</Label>
+                <Input
+                  id="b2bRate"
+                  type="number"
+                  step="0.01"
+                  value={b2bRate}
+                  onChange={(e) => setB2bRate(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="roomProfit">Profit (Auto-calculated)</Label>
+                <Input
+                  id="roomProfit"
+                  type="text"
+                  value={`₹${calculateRoomProfit().toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
+                  disabled
+                  className="bg-muted text-2xl font-bold"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex gap-4">
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Room Booking"
+              )}
+            </Button>
+          </div>
+
+          {submitSuccess && (
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-center">
+              Room booking submitted successfully!
+            </div>
+          )}
+        </div>
+      </form>
+    )
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleBusBookingSubmit}>
       <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Bus Booking</h2>
+          <Button type="button" variant="outline" onClick={() => setBookingType(null)}>
+            Change Booking Type
+          </Button>
+        </div>
+
         {/* Trip Details Section */}
         <Card>
           <CardHeader>
@@ -543,14 +793,14 @@ export default function TripReportForm() {
                 Submitting...
               </>
             ) : (
-              "Submit Trip Report"
+              "Submit Bus Booking"
             )}
           </Button>
         </div>
 
         {submitSuccess && (
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-center">
-            Trip report submitted successfully!
+            Bus booking submitted successfully!
           </div>
         )}
       </div>

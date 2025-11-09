@@ -49,6 +49,19 @@ interface TripReportData {
   final_profit: number
 }
 
+interface RoomBookingData {
+  check_in_date: string
+  check_out_date: string
+  place: string
+  no_of_adults: number
+  no_of_kids: number
+  property_name: string
+  sales_by: string
+  selling_rate: number
+  b2b_rate: number
+  profit: number
+}
+
 function getSupabaseServerClient() {
   const cookieStore = cookies()
 
@@ -210,6 +223,7 @@ export async function submitTripReport(data: TripReportData) {
     const { error } = await supabase.from("trip_reports").insert([
       {
         ...data,
+        booking_type: "bus",
         created_at: new Date().toISOString(),
       },
     ])
@@ -223,5 +237,36 @@ export async function submitTripReport(data: TripReportData) {
   } catch (error) {
     console.error("[v0] Error submitting trip report:", error)
     return { success: false, error: "Failed to submit trip report" }
+  }
+}
+
+export async function submitRoomBooking(data: RoomBookingData) {
+  const supabase = getSupabaseServerClient()
+
+  try {
+    const { error } = await supabase.from("room_bookings").insert([
+      {
+        ...data,
+        created_at: new Date().toISOString(),
+      },
+    ])
+
+    if (error) {
+      if (error.code === "PGRST205") {
+        console.error("[v0] room_bookings table does not exist")
+        return {
+          success: false,
+          error:
+            "The room_bookings table has not been created yet. Please run the SQL script: scripts/07-create-room-bookings-table.sql in your Supabase SQL Editor.",
+        }
+      }
+      console.error("[v0] Error submitting room booking:", error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error("[v0] Error submitting room booking:", error)
+    return { success: false, error: "Failed to submit room booking" }
   }
 }
