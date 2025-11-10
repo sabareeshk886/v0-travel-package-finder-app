@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Phone, Mail, MapPin, Star, Plus, Trash2, Edit, Save, X } from "lucide-react"
+import { ArrowLeft, Phone, Mail, MapPin, Plus, Trash2, Edit, Save, X } from "lucide-react"
 import {
   getVendors,
   updateVendor,
@@ -360,6 +360,25 @@ export default function VendorDetailPage() {
                       />
                     </div>
                     <div className="space-y-2">
+                      <Label>Hotel Category</Label>
+                      <Select
+                        value={editData.hotel_category || ""}
+                        onValueChange={(value) => setEditData({ ...editData, hotel_category: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select hotel category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="2 Star">2 Star</SelectItem>
+                          <SelectItem value="3 Star">3 Star</SelectItem>
+                          <SelectItem value="4 Star">4 Star</SelectItem>
+                          <SelectItem value="5 Star">5 Star</SelectItem>
+                          <SelectItem value="Resort">Resort</SelectItem>
+                          <SelectItem value="Homestay">Homestay</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
                       <Label>Contact Person</Label>
                       <Input
                         value={editData.contact_person || ""}
@@ -391,6 +410,17 @@ export default function VendorDetailPage() {
                   </div>
                 ) : (
                   <div className="grid gap-4 md:grid-cols-2">
+                    {vendor.hotel_category && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Hotel Category</p>
+                        <Link
+                          href={`/crm/vendors?category=Hotel&hotelCategory=${encodeURIComponent(vendor.hotel_category)}`}
+                          className="font-medium text-blue-600 hover:underline"
+                        >
+                          {vendor.hotel_category}
+                        </Link>
+                      </div>
+                    )}
                     {vendor.contact_person && (
                       <div>
                         <p className="text-sm text-muted-foreground">Contact Person</p>
@@ -410,15 +440,6 @@ export default function VendorDetailPage() {
                         <div>
                           <p className="text-sm text-muted-foreground">Email</p>
                           <p className="font-medium">{vendor.email}</p>
-                        </div>
-                      </div>
-                    )}
-                    {vendor.rating && (
-                      <div className="flex items-center gap-3">
-                        <Star className="h-5 w-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Rating</p>
-                          <p className="font-medium">{vendor.rating} / 5</p>
                         </div>
                       </div>
                     )}
@@ -889,15 +910,6 @@ export default function VendorDetailPage() {
                       <div>
                         <p className="text-sm text-muted-foreground">Email</p>
                         <p className="font-medium">{vendor.email}</p>
-                      </div>
-                    </div>
-                  )}
-                  {vendor.rating && (
-                    <div className="flex items-center gap-3">
-                      <Star className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Rating</p>
-                        <p className="font-medium">{vendor.rating} / 5</p>
                       </div>
                     </div>
                   )}

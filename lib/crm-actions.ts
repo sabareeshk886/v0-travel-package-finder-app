@@ -339,6 +339,7 @@ export async function updateTrip(id: string, updates: any) {
 
 export async function getVendors(filters?: {
   category?: string
+  hotelCategory?: string // Added hotelCategory filter
   isActive?: boolean
   search?: string
 }) {
@@ -348,6 +349,10 @@ export async function getVendors(filters?: {
 
   if (filters?.category) {
     query = query.eq("category", filters.category)
+  }
+
+  if (filters?.hotelCategory) {
+    query = query.eq("hotel_category", filters.hotelCategory)
   }
 
   if (filters?.isActive !== undefined) {

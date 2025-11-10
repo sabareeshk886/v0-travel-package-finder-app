@@ -8,21 +8,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Building2, Phone, Mail, MapPin, Star } from "lucide-react"
 import { getVendors } from "@/lib/crm-actions"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function VendorsPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [vendors, setVendors] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
+  const [hotelCategoryFilter, setHotelCategoryFilter] = useState<string>("all")
+
+  useEffect(() => {
+    const category = searchParams.get("category")
+    const hotelCategory = searchParams.get("hotelCategory")
+    if (category) setCategoryFilter(category)
+    if (hotelCategory) setHotelCategoryFilter(hotelCategory)
+  }, [searchParams])
 
   useEffect(() => {
     loadVendors()
-  }, [categoryFilter])
+  }, [categoryFilter, hotelCategoryFilter])
 
   const loadVendors = async () => {
     setLoading(true)
     const filters: any = { isActive: true }
     if (categoryFilter !== "all") filters.category = categoryFilter
+    if (hotelCategoryFilter !== "all") filters.hotelCategory = hotelCategoryFilter
     if (searchTerm) filters.search = searchTerm
 
     const result = await getVendors(filters)
@@ -89,6 +101,22 @@ export default function VendorsPage() {
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
+            {categoryFilter === "Hotel" && (
+              <Select value={hotelCategoryFilter} onValueChange={setHotelCategoryFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Hotel Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Hotels</SelectItem>
+                  <SelectItem value="2 Star">2 Star</SelectItem>
+                  <SelectItem value="3 Star">3 Star</SelectItem>
+                  <SelectItem value="4 Star">4 Star</SelectItem>
+                  <SelectItem value="5 Star">5 Star</SelectItem>
+                  <SelectItem value="Resort">Resort</SelectItem>
+                  <SelectItem value="Homestay">Homestay</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
             <Button onClick={loadVendors}>Search</Button>
           </div>
         </CardContent>
