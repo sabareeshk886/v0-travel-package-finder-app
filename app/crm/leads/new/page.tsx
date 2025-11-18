@@ -25,6 +25,8 @@ export default function NewLeadPage() {
     destination: "",
     travel_dates: "",
     no_of_pax: "",
+    no_of_staff: "",
+    lead_guest_name: "",
     budget: "",
     special_requirements: "",
     priority: "medium",
@@ -44,6 +46,8 @@ export default function NewLeadPage() {
       destination: formData.destination || undefined,
       travel_dates: formData.travel_dates || undefined,
       no_of_pax: formData.no_of_pax ? Number.parseInt(formData.no_of_pax) : undefined,
+      no_of_staff: formData.no_of_staff ? Number.parseInt(formData.no_of_staff) : undefined,
+      lead_guest_name: formData.lead_guest_name || undefined,
       budget: formData.budget ? Number.parseFloat(formData.budget) : undefined,
       special_requirements: formData.special_requirements || undefined,
       priority: formData.priority,
@@ -104,6 +108,16 @@ export default function NewLeadPage() {
                   value={formData.customer_name}
                   onChange={(e) => handleChange("customer_name", e.target.value)}
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lead_guest_name">Lead Guest Name</Label>
+                <Input
+                  id="lead_guest_name"
+                  value={formData.lead_guest_name}
+                  onChange={(e) => handleChange("lead_guest_name", e.target.value)}
+                  placeholder="Primary guest name"
                 />
               </div>
 
@@ -180,6 +194,17 @@ export default function NewLeadPage() {
                   type="number"
                   value={formData.no_of_pax}
                   onChange={(e) => handleChange("no_of_pax", e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="no_of_staff">No of Staff</Label>
+                <Input
+                  id="no_of_staff"
+                  type="number"
+                  value={formData.no_of_staff}
+                  onChange={(e) => handleChange("no_of_staff", e.target.value)}
+                  placeholder="Number of staff members"
                 />
               </div>
 

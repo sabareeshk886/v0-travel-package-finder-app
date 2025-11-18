@@ -45,6 +45,8 @@ export async function createLead(leadData: {
   destination?: string
   travel_dates?: string
   no_of_pax?: number
+  no_of_staff?: number
+  lead_guest_name?: string
   budget?: number
   special_requirements?: string
   priority?: string

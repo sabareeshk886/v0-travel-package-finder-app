@@ -87,7 +87,7 @@ export default function NewQuotationPage() {
     validityDate.setDate(validityDate.getDate() + Number.parseInt(formData.validity_days))
 
     const quotationData = {
-      lead_id: formData.lead_id || null,
+      lead_id: formData.lead_id === "0" ? null : formData.lead_id,
       destination: formData.destination,
       travel_dates: formData.travel_dates,
       no_of_pax: Number.parseInt(formData.no_of_pax),
@@ -103,7 +103,7 @@ export default function NewQuotationPage() {
       validity_date: validityDate.toISOString().split("T")[0],
       terms_conditions: formData.terms_conditions,
       status: "draft",
-      created_by: user?.email || "admin@fernway.com",
+      created_by: user?.id || null,
     }
 
     const result = await createQuotation(quotationData)
