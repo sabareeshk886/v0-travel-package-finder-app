@@ -1,0 +1,2568 @@
+{
+  "id": "56ed8d58-c946-4d2d-99b4-53c80dd1fdc0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.expenses": {
+      "name": "expenses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "expense_number": {
+          "name": "expense_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_id": {
+          "name": "trip_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expense_date": {
+          "name": "expense_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_mode": {
+          "name": "payment_mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payment_status": {
+          "name": "payment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'pending'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "expenses_trip_id_trips_id_fk": {
+          "name": "expenses_trip_id_trips_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "trips",
+          "columnsFrom": [
+            "trip_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "expenses_vendor_id_vendors_id_fk": {
+          "name": "expenses_vendor_id_vendors_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "vendors",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "expenses_created_by_users_id_fk": {
+          "name": "expenses_created_by_users_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "expenses_expense_number_unique": {
+          "name": "expenses_expense_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "expense_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.follow_ups": {
+      "name": "follow_ups",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "lead_id": {
+          "name": "lead_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "follow_up_date": {
+          "name": "follow_up_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "follow_up_time": {
+          "name": "follow_up_time",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'pending'"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "follow_ups_lead_id_leads_id_fk": {
+          "name": "follow_ups_lead_id_leads_id_fk",
+          "tableFrom": "follow_ups",
+          "tableTo": "leads",
+          "columnsFrom": [
+            "lead_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "follow_ups_created_by_users_id_fk": {
+          "name": "follow_ups_created_by_users_id_fk",
+          "tableFrom": "follow_ups",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.international": {
+      "name": "international",
+      "schema": "",
+      "columns": {
+        "2": {
+          "name": "2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "3": {
+          "name": "3",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "4": {
+          "name": "4",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "5": {
+          "name": "5",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "6": {
+          "name": "6",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "7": {
+          "name": "7",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "8": {
+          "name": "8",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "9": {
+          "name": "9",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "10": {
+          "name": "10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "11": {
+          "name": "11",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "12": {
+          "name": "12",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "13": {
+          "name": "13",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "14": {
+          "name": "14",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "15": {
+          "name": "15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sl_code": {
+          "name": "sl_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_code": {
+          "name": "trip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "itinerary": {
+          "name": "itinerary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "20+2": {
+          "name": "20+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "25+2": {
+          "name": "25+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "30+2": {
+          "name": "30+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "35+2": {
+          "name": "35+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "40+2": {
+          "name": "40+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "45+2": {
+          "name": "45+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "50+2": {
+          "name": "50+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kashmir": {
+      "name": "kashmir",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sl_code": {
+          "name": "sl_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_code": {
+          "name": "trip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "itinerary": {
+          "name": "itinerary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_02_std": {
+          "name": "pax_02_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_02_dlx": {
+          "name": "pax_02_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_02_prm": {
+          "name": "pax_02_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_03_std": {
+          "name": "pax_03_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_03_dlx": {
+          "name": "pax_03_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_03_prm": {
+          "name": "pax_03_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_04_std": {
+          "name": "pax_04_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_04_dlx": {
+          "name": "pax_04_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_04_prm": {
+          "name": "pax_04_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_05_std": {
+          "name": "pax_05_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_05_dlx": {
+          "name": "pax_05_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_05_prm": {
+          "name": "pax_05_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_06_std": {
+          "name": "pax_06_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_06_dlx": {
+          "name": "pax_06_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_06_prm": {
+          "name": "pax_06_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_07_std": {
+          "name": "pax_07_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_07_dlx": {
+          "name": "pax_07_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_07_prm": {
+          "name": "pax_07_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_08_std": {
+          "name": "pax_08_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_08_dlx": {
+          "name": "pax_08_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_08_prm": {
+          "name": "pax_08_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_09_std": {
+          "name": "pax_09_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_09_dlx": {
+          "name": "pax_09_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_09_prm": {
+          "name": "pax_09_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_10_std": {
+          "name": "pax_10_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_10_dlx": {
+          "name": "pax_10_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_10_prm": {
+          "name": "pax_10_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_12_std": {
+          "name": "pax_12_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_12_dlx": {
+          "name": "pax_12_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_12_prm": {
+          "name": "pax_12_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_15_std": {
+          "name": "pax_15_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_15_dlx": {
+          "name": "pax_15_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pax_15_prm": {
+          "name": "pax_15_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "seasonal_std": {
+          "name": "seasonal_std",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "seasonal_dlx": {
+          "name": "seasonal_dlx",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "seasonal_prm": {
+          "name": "seasonal_prm",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.leads": {
+      "name": "leads",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "lead_source": {
+          "name": "lead_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "customer_name": {
+          "name": "customer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "destination": {
+          "name": "destination",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "travel_dates": {
+          "name": "travel_dates",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_of_pax": {
+          "name": "no_of_pax",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "budget": {
+          "name": "budget",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "special_requirements": {
+          "name": "special_requirements",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'new'"
+        },
+        "assigned_to": {
+          "name": "assigned_to",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "priority": {
+          "name": "priority",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'medium'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "leads_assigned_to_users_id_fk": {
+          "name": "leads_assigned_to_users_id_fk",
+          "tableFrom": "leads",
+          "tableTo": "users",
+          "columnsFrom": [
+            "assigned_to"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "leads_created_by_users_id_fk": {
+          "name": "leads_created_by_users_id_fk",
+          "tableFrom": "leads",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.north": {
+      "name": "north",
+      "schema": "",
+      "columns": {
+        "2": {
+          "name": "2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "3": {
+          "name": "3",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "4": {
+          "name": "4",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "5": {
+          "name": "5",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "6": {
+          "name": "6",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "7": {
+          "name": "7",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "8": {
+          "name": "8",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "9": {
+          "name": "9",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "10": {
+          "name": "10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "11": {
+          "name": "11",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "12": {
+          "name": "12",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "13": {
+          "name": "13",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "14": {
+          "name": "14",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "15": {
+          "name": "15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sl_code": {
+          "name": "sl_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_code": {
+          "name": "trip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "itinerary": {
+          "name": "itinerary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "20+2": {
+          "name": "20+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "25+2": {
+          "name": "25+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "30+2": {
+          "name": "30+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "35+2": {
+          "name": "35+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "40+2": {
+          "name": "40+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "45+2": {
+          "name": "45+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "50+2": {
+          "name": "50+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.northeast": {
+      "name": "northeast",
+      "schema": "",
+      "columns": {
+        "2": {
+          "name": "2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "3": {
+          "name": "3",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "4": {
+          "name": "4",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "5": {
+          "name": "5",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "6": {
+          "name": "6",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "7": {
+          "name": "7",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "8": {
+          "name": "8",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "9": {
+          "name": "9",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "10": {
+          "name": "10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "11": {
+          "name": "11",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "12": {
+          "name": "12",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "13": {
+          "name": "13",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "14": {
+          "name": "14",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "15": {
+          "name": "15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sl_code": {
+          "name": "sl_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_code": {
+          "name": "trip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "itinerary": {
+          "name": "itinerary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "20+2": {
+          "name": "20+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "25+2": {
+          "name": "25+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "30+2": {
+          "name": "30+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "35+2": {
+          "name": "35+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "40+2": {
+          "name": "40+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "45+2": {
+          "name": "45+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "50+2": {
+          "name": "50+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.payments": {
+      "name": "payments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "payment_type": {
+          "name": "payment_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_id": {
+          "name": "trip_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "customer_name": {
+          "name": "customer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_mode": {
+          "name": "payment_mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_date": {
+          "name": "payment_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_reference": {
+          "name": "transaction_reference",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "receipt_number": {
+          "name": "receipt_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "payments_trip_id_trips_id_fk": {
+          "name": "payments_trip_id_trips_id_fk",
+          "tableFrom": "payments",
+          "tableTo": "trips",
+          "columnsFrom": [
+            "trip_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payments_created_by_users_id_fk": {
+          "name": "payments_created_by_users_id_fk",
+          "tableFrom": "payments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.quotations": {
+      "name": "quotations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "lead_id": {
+          "name": "lead_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quotation_number": {
+          "name": "quotation_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destination": {
+          "name": "destination",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "travel_dates": {
+          "name": "travel_dates",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no_of_pax": {
+          "name": "no_of_pax",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no_of_days": {
+          "name": "no_of_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "package_details": {
+          "name": "package_details",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_head_rate": {
+          "name": "per_head_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_amount": {
+          "name": "total_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gst_amount": {
+          "name": "gst_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "grand_total": {
+          "name": "grand_total",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "validity_date": {
+          "name": "validity_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "terms_conditions": {
+          "name": "terms_conditions",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'draft'"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "quotations_lead_id_leads_id_fk": {
+          "name": "quotations_lead_id_leads_id_fk",
+          "tableFrom": "quotations",
+          "tableTo": "leads",
+          "columnsFrom": [
+            "lead_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "quotations_created_by_users_id_fk": {
+          "name": "quotations_created_by_users_id_fk",
+          "tableFrom": "quotations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "quotations_quotation_number_unique": {
+          "name": "quotations_quotation_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "quotation_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.room_bookings": {
+      "name": "room_bookings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "check_in_date": {
+          "name": "check_in_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "check_out_date": {
+          "name": "check_out_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "place": {
+          "name": "place",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_of_adults": {
+          "name": "no_of_adults",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_of_kids": {
+          "name": "no_of_kids",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "property_name": {
+          "name": "property_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sales_by": {
+          "name": "sales_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "selling_rate": {
+          "name": "selling_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "b2b_rate": {
+          "name": "b2b_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profit": {
+          "name": "profit",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.south": {
+      "name": "south",
+      "schema": "",
+      "columns": {
+        "2": {
+          "name": "2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "3": {
+          "name": "3",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "4": {
+          "name": "4",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "5": {
+          "name": "5",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "6": {
+          "name": "6",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "7": {
+          "name": "7",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "8": {
+          "name": "8",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "9": {
+          "name": "9",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "10": {
+          "name": "10",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "11": {
+          "name": "11",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "12": {
+          "name": "12",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "13": {
+          "name": "13",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "14": {
+          "name": "14",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "15": {
+          "name": "15",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "sl_code": {
+          "name": "sl_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_code": {
+          "name": "trip_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "itinerary": {
+          "name": "itinerary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "20+2": {
+          "name": "20+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "25+2": {
+          "name": "25+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "30+2": {
+          "name": "30+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "35+2": {
+          "name": "35+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "40+2": {
+          "name": "40+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "45+2": {
+          "name": "45+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "50+2": {
+          "name": "50+2",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.trip_reports": {
+      "name": "trip_reports",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "customer_name": {
+          "name": "customer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pickup_date": {
+          "name": "pickup_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dropoff_date": {
+          "name": "dropoff_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pickup_point": {
+          "name": "pickup_point",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "destination": {
+          "name": "destination",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_of_days": {
+          "name": "no_of_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bus_details": {
+          "name": "bus_details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "driver_name": {
+          "name": "driver_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "companion": {
+          "name": "companion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "per_head": {
+          "name": "per_head",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "no_of_pax": {
+          "name": "no_of_pax",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "free_of_cost": {
+          "name": "free_of_cost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discount": {
+          "name": "discount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sales_by": {
+          "name": "sales_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "coordinator": {
+          "name": "coordinator",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gst": {
+          "name": "gst",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "additional_income": {
+          "name": "additional_income",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advance_paid": {
+          "name": "advance_paid",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lead_type": {
+          "name": "lead_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "companion_fund": {
+          "name": "companion_fund",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_cash": {
+          "name": "total_cash",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expenses": {
+          "name": "expenses",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_expenses": {
+          "name": "total_expenses",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "incentive": {
+          "name": "incentive",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "final_profit": {
+          "name": "final_profit",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "booking_type": {
+          "name": "booking_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.trip_vendors": {
+      "name": "trip_vendors",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "trip_id": {
+          "name": "trip_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "service_type": {
+          "name": "service_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "service_date": {
+          "name": "service_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payment_status": {
+          "name": "payment_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'pending'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "trip_vendors_trip_id_trips_id_fk": {
+          "name": "trip_vendors_trip_id_trips_id_fk",
+          "tableFrom": "trip_vendors",
+          "tableTo": "trips",
+          "columnsFrom": [
+            "trip_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "trip_vendors_vendor_id_vendors_id_fk": {
+          "name": "trip_vendors_vendor_id_vendors_id_fk",
+          "tableFrom": "trip_vendors",
+          "tableTo": "vendors",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.trips": {
+      "name": "trips",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "trip_number": {
+          "name": "trip_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lead_id": {
+          "name": "lead_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quotation_id": {
+          "name": "quotation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "customer_name": {
+          "name": "customer_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "destination": {
+          "name": "destination",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pickup_point": {
+          "name": "pickup_point",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pickup_date": {
+          "name": "pickup_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dropoff_date": {
+          "name": "dropoff_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no_of_days": {
+          "name": "no_of_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no_of_pax": {
+          "name": "no_of_pax",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "per_head_rate": {
+          "name": "per_head_rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_amount": {
+          "name": "total_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gst_amount": {
+          "name": "gst_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "grand_total": {
+          "name": "grand_total",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "trip_coordinator": {
+          "name": "trip_coordinator",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "driver_name": {
+          "name": "driver_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bus_details": {
+          "name": "bus_details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "package_details": {
+          "name": "package_details",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'confirmed'"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "trips_lead_id_leads_id_fk": {
+          "name": "trips_lead_id_leads_id_fk",
+          "tableFrom": "trips",
+          "tableTo": "leads",
+          "columnsFrom": [
+            "lead_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "trips_quotation_id_quotations_id_fk": {
+          "name": "trips_quotation_id_quotations_id_fk",
+          "tableFrom": "trips",
+          "tableTo": "quotations",
+          "columnsFrom": [
+            "quotation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "trips_trip_coordinator_users_id_fk": {
+          "name": "trips_trip_coordinator_users_id_fk",
+          "tableFrom": "trips",
+          "tableTo": "users",
+          "columnsFrom": [
+            "trip_coordinator"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "trips_created_by_users_id_fk": {
+          "name": "trips_created_by_users_id_fk",
+          "tableFrom": "trips",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "trips_trip_number_unique": {
+          "name": "trips_trip_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "trip_number"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vendor_price_lists": {
+      "name": "vendor_price_lists",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "vendor_id": {
+          "name": "vendor_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "item_name": {
+          "name": "item_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "season": {
+          "name": "season",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rate_type": {
+          "name": "rate_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rate": {
+          "name": "rate",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valid_from": {
+          "name": "valid_from",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "valid_to": {
+          "name": "valid_to",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vendor_price_lists_vendor_id_vendors_id_fk": {
+          "name": "vendor_price_lists_vendor_id_vendors_id_fk",
+          "tableFrom": "vendor_price_lists",
+          "tableTo": "vendors",
+          "columnsFrom": [
+            "vendor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vendors": {
+      "name": "vendors",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "vendor_name": {
+          "name": "vendor_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "contact_person": {
+          "name": "contact_person",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gst_number": {
+          "name": "gst_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bank_details": {
+          "name": "bank_details",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payment_terms": {
+          "name": "payment_terms",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
