@@ -369,6 +369,19 @@ export async function updateTrip(id: string, updates: any) {
   return { success: true, data }
 }
 
+export async function deleteTrip(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("trips").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting trip:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}
+
 export async function createTripRoomBooking(bookingData: any) {
   const supabase = await createClient()
 

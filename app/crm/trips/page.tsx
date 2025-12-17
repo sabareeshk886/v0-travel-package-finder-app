@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Search, Plane, Calendar, Phone, MapPin } from "lucide-react"
-import { getTrips } from "@/lib/crm-actions"
+import { Plus, Search, Plane, Calendar, Phone, MapPin, Trash2 } from "lucide-react"
+import { getTrips, deleteTrip } from "@/lib/crm-actions"
 import Link from "next/link"
 
 export default function TripsPage() {
@@ -145,12 +145,34 @@ export default function TripsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right text-sm">
-                      <p className="text-lg font-bold">₹{trip.grand_total?.toLocaleString()}</p>
-                      <p className="text-muted-foreground mt-1">{trip.no_of_pax} travelers</p>
-                      {trip.coordinator && (
-                        <p className="text-muted-foreground mt-1">Coordinator: {trip.coordinator.full_name}</p>
-                      )}
+                    <div className="text-right text-sm flex flex-col items-end justify-between h-full min-h-[100px]">
+                      <div>
+                        <p className="text-lg font-bold">₹{trip.grand_total?.toLocaleString()}</p>
+                        <p className="text-muted-foreground mt-1">{trip.no_of_pax} travelers</p>
+                        {trip.coordinator && (
+                          <p className="text-muted-foreground mt-1">Coordinator: {trip.coordinator.full_name}</p>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-4"
+                        onClick={(e) => {
+                          e.preventDefault() // Prevent navigation
+                          if (confirm("Are you sure you want to delete this trip? This action cannot be undone.")) {
+                            deleteTrip(trip.id).then((res) => {
+                              if (res.success) {
+                                loadTrips()
+                              } else {
+                                alert("Failed to delete trip")
+                              }
+                            })
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
