@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Plus, CheckCircle2, Hotel } from "lucide-react"
+import { ArrowLeft, Plus, CheckCircle2, Hotel, Edit } from "lucide-react"
 import { getTrips, getPayments, createPayment, getTripRoomBookings } from "@/lib/crm-actions"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
@@ -129,6 +129,12 @@ export default function TripDetailPage() {
           </div>
         </div>
         <div className="flex gap-2">
+          <Link href={`/crm/trips/${tripId}/edit`}>
+            <Button variant="outline" size="sm">
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          </Link>
           <span
             className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium border ${getStatusColor(trip.status)}`}
           >
