@@ -23,7 +23,8 @@ export default function NewLeadPage() {
     phone: "",
     email: "",
     destination: "",
-    travel_dates: "",
+    travel_date_from: "",
+    travel_date_to: "",
     no_of_pax: "",
     no_of_staff: "",
     lead_guest_name: "",
@@ -38,13 +39,21 @@ export default function NewLeadPage() {
     e.preventDefault()
     setLoading(true)
 
+    // Combine dates if both are present
+    let travelDates = undefined
+    if (formData.travel_date_from && formData.travel_date_to) {
+      travelDates = `${formData.travel_date_from} to ${formData.travel_date_to}`
+    } else if (formData.travel_date_from) {
+      travelDates = formData.travel_date_from
+    }
+
     const leadData: any = {
       lead_source: formData.lead_source,
       customer_name: formData.customer_name,
       phone: formData.phone,
       email: formData.email || undefined,
       destination: formData.destination || undefined,
-      travel_dates: formData.travel_dates || undefined,
+      travel_dates: travelDates,
       no_of_pax: formData.no_of_pax ? Number.parseInt(formData.no_of_pax) : undefined,
       no_of_staff: formData.no_of_staff ? Number.parseInt(formData.no_of_staff) : undefined,
       lead_guest_name: formData.lead_guest_name || undefined,
@@ -178,12 +187,22 @@ export default function NewLeadPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="travel_dates">Travel Dates</Label>
+                <Label htmlFor="travel_date_from">Travel Date From</Label>
                 <Input
-                  id="travel_dates"
-                  value={formData.travel_dates}
-                  onChange={(e) => handleChange("travel_dates", e.target.value)}
-                  placeholder="e.g., 15-20 March 2025"
+                  id="travel_date_from"
+                  type="date"
+                  value={formData.travel_date_from}
+                  onChange={(e) => handleChange("travel_date_from", e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="travel_date_to">Travel Date To</Label>
+                <Input
+                  id="travel_date_to"
+                  type="date"
+                  value={formData.travel_date_to}
+                  onChange={(e) => handleChange("travel_date_to", e.target.value)}
                 />
               </div>
 
