@@ -312,6 +312,19 @@ export async function createTrip(tripData: any) {
     trip_number: tripNumber,
   }
 
+  // Check for duplicate trip for the same lead
+  if (tripData.lead_id) {
+    const { data: existingTrip } = await supabase
+      .from("trips")
+      .select("id")
+      .eq("lead_id", tripData.lead_id)
+      .single()
+
+    if (existingTrip) {
+      return { success: false, error: "A trip already exists for this lead." }
+    }
+  }
+
   const { data: trip, error } = await supabase.from("trips").insert([dataWithNumber]).select().single()
 
   if (error) {
