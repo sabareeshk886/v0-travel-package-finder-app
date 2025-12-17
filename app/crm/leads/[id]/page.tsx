@@ -47,8 +47,6 @@ export default function LeadDetailPage() {
   const [editing, setEditing] = useState(false)
   const [editedLead, setEditedLead] = useState<any>(null)
   const [showFollowUpForm, setShowFollowUpForm] = useState(false)
-  const [showConvertForm, setShowConvertForm] = useState(false)
-  const [tripStatus, setTripStatus] = useState<string>("confirmed")
 
   const [followUpData, setFollowUpData] = useState({
     follow_up_date: "",
@@ -143,73 +141,7 @@ export default function LeadDetailPage() {
     }
   }
 
-  const handleConvertToTrip = async () => {
-    if (!lead) return
 
-    const convertDateFormat = (dateStr: string): string => {
-      if (!dateStr) return new Date().toISOString().split("T")[0]
-
-      // Check if date is already in YYYY-MM-DD format
-      if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        return dateStr
-      }
-
-      // Convert from DD/MM/YYYY to YYYY-MM-DD
-      const parts = dateStr.split(/[-/]/)
-      if (parts.length === 3) {
-        // Assume DD/MM/YYYY or DD-MM-YYYY
-        const [day, month, year] = parts
-        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-      }
-
-      // Fallback to today's date if parsing fails
-      return new Date().toISOString().split("T")[0]
-    }
-
-    const travelDates = lead.travel_dates?.split(" - ") || []
-    const pickupDate = travelDates[0]
-      ? convertDateFormat(travelDates[0].trim())
-      : new Date().toISOString().split("T")[0]
-    const dropoffDate = travelDates[1]
-      ? convertDateFormat(travelDates[1].trim())
-      : new Date().toISOString().split("T")[0]
-
-    const tripData = {
-      lead_id: lead.id,
-      customer_name: lead.customer_name,
-      phone: lead.phone,
-      email: lead.email || "",
-      destination: lead.destination || "",
-      pickup_date: pickupDate,
-      dropoff_date: dropoffDate,
-      no_of_pax: lead.no_of_pax || 1,
-      no_of_days: 1,
-      status: tripStatus,
-      per_head_rate: lead.budget || 0,
-      total_amount: (lead.budget || 0) * (lead.no_of_pax || 1),
-      gst_amount: 0,
-      grand_total: (lead.budget || 0) * (lead.no_of_pax || 1),
-      package_details: {
-        special_requirements: lead.special_requirements,
-        notes: lead.notes,
-      },
-    }
-
-    console.log("[v0] Converting lead to trip with data:", tripData)
-
-    const result = await createTrip(tripData)
-    if (result.success) {
-      setShowConvertForm(false)
-      alert(`Trip created successfully with status: ${tripStatus}`)
-      // Update lead status based on trip status
-      const newLeadStatus =
-        tripStatus === "confirmed" ? "confirmed" : tripStatus === "cancelled" ? "cancelled" : "quoted"
-      await handleUpdateStatus(newLeadStatus)
-      router.push(`/crm/trips/${result.data.id}`)
-    } else {
-      alert("Error creating trip: " + result.error)
-    }
-  }
 
   if (leadId === "new") {
     return null
@@ -249,10 +181,12 @@ export default function LeadDetailPage() {
         <div className="flex gap-2">
           {!editing ? (
             <>
-              <Button variant="default" onClick={() => setShowConvertForm(!showConvertForm)}>
-                <Plane className="h-4 w-4 mr-2" />
-                Convert to Trip
-              </Button>
+              <Link href={`/crm/trips/new?leadId=${lead.id}`}>
+                <Button variant="default">
+                  <Plane className="h-4 w-4 mr-2" />
+                  Convert to Trip
+                </Button>
+              </Link>
               <Button variant="outline" onClick={() => setEditing(true)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
@@ -290,40 +224,6 @@ export default function LeadDetailPage() {
           </Select>
         </div>
       </div>
-
-      {showConvertForm && (
-        <Card className="border-blue-200 bg-blue-50">
-          <CardHeader>
-            <CardTitle>Convert Lead to Trip</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="trip_status">Trip Status</Label>
-              <Select value={tripStatus} onValueChange={setTripStatus}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending - Awaiting Confirmation</SelectItem>
-                  <SelectItem value="confirmed">Confirmed - Ready for Payment</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {tripStatus === "confirmed" && "✓ Confirmed trips will have payment options available"}
-              {tripStatus === "pending" && "⏳ Pending trips are awaiting final confirmation"}
-              {tripStatus === "cancelled" && "✕ Cancelled trips will be marked as inactive"}
-            </p>
-            <div className="flex gap-2">
-              <Button onClick={handleConvertToTrip}>Create Trip</Button>
-              <Button variant="outline" onClick={() => setShowConvertForm(false)}>
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       <Tabs defaultValue="details">
         <TabsList>
