@@ -90,7 +90,7 @@ export default function NewTripPage() {
     e.preventDefault()
     setLoading(true)
 
-    const defaultUserId = "00000000-0000-0000-0000-000000000000"
+    setLoading(true)
 
     // Filter out empty room bookings
     const validRoomBookings = roomBookings.filter((room) => room.place || room.property_name)
@@ -107,7 +107,9 @@ export default function NewTripPage() {
       total_amount: formData.total_amount ? Number.parseFloat(formData.total_amount) : undefined,
       gst_amount: formData.gst_amount ? Number.parseFloat(formData.gst_amount) : undefined,
       grand_total: formData.grand_total ? Number.parseFloat(formData.grand_total) : undefined,
-      created_by: defaultUserId,
+      grand_total: formData.grand_total ? Number.parseFloat(formData.grand_total) : undefined,
+      created_by: coordinators.length > 0 ? coordinators[0].id : null, // Use first available coordinator or null
+      lead_id: formData.lead_id || undefined,
       lead_id: formData.lead_id || undefined,
       trip_coordinator: formData.trip_coordinator || undefined,
       package_details: formData.package_details ? JSON.parse(formData.package_details) : undefined,
