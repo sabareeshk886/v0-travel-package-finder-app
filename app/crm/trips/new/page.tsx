@@ -107,9 +107,7 @@ export default function NewTripPage() {
       total_amount: formData.total_amount ? Number.parseFloat(formData.total_amount) : undefined,
       gst_amount: formData.gst_amount ? Number.parseFloat(formData.gst_amount) : undefined,
       grand_total: formData.grand_total ? Number.parseFloat(formData.grand_total) : undefined,
-      grand_total: formData.grand_total ? Number.parseFloat(formData.grand_total) : undefined,
-      created_by: coordinators.length > 0 ? coordinators[0].id : null, // Use first available coordinator or null
-      lead_id: formData.lead_id || undefined,
+      created_by: coordinators.length > 0 ? coordinators[0].id : null,
       lead_id: formData.lead_id || undefined,
       trip_coordinator: formData.trip_coordinator || undefined,
       package_details: formData.package_details ? JSON.parse(formData.package_details) : undefined,
