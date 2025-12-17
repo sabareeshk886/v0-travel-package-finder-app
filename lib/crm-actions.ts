@@ -359,11 +359,43 @@ export async function createTrip(tripData: any) {
 export async function updateTrip(id: string, updates: any) {
   const supabase = await createClient()
 
-  const { data, error } = await supabase.from("trips").update(updates).eq("id", id).select().single()
+  // Extract room bookings if present
+  const { room_bookings, ...tripDetails } = updates
+
+  const { data, error } = await supabase.from("trips").update(tripDetails).eq("id", id).select().single()
 
   if (error) {
     console.error("[v0] Error updating trip:", error)
     return { success: false, error: error.message }
+  }
+
+  // Handle room bookings
+  if (room_bookings && Array.isArray(room_bookings)) {
+    for (const booking of room_bookings) {
+      if (booking.id) {
+        // Update existing booking
+        const { error: updateError } = await supabase
+          .from("trip_room_bookings")
+          .update(booking)
+          .eq("id", booking.id)
+
+        if (updateError) {
+          console.error("[v0] Error updating room booking:", updateError)
+        }
+      } else {
+        // Insert new booking
+        const { error: insertError } = await supabase.from("trip_room_bookings").insert([
+          {
+            ...booking,
+            trip_id: id,
+          },
+        ])
+
+        if (insertError) {
+          console.error("[v0] Error creating room booking:", insertError)
+        }
+      }
+    }
   }
 
   return { success: true, data }
@@ -406,6 +438,19 @@ export async function createTripRoomBooking(bookingData: any) {
   }
 
   return { success: true, data }
+}
+
+export async function deleteTripRoomBooking(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("trip_room_bookings").delete().eq("id", id)
+
+  if (error) {
+    console.error("[v0] Error deleting trip room booking:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
 }
 
 // Vendor Actions
