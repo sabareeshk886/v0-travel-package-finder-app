@@ -69,6 +69,26 @@ export default function NewTripPage() {
       if (leadId) {
         const lead = leadsResult.data.find((l: any) => l.id === leadId)
         if (lead) {
+          // Parse dates if available
+          let pickupDate = ""
+          let dropoffDate = ""
+          if (lead.travel_dates && lead.travel_dates.includes(" to ")) {
+            const [start, end] = lead.travel_dates.split(" to ")
+            pickupDate = start
+            dropoffDate = end
+          } else if (lead.travel_dates) {
+            pickupDate = lead.travel_dates
+          }
+
+          // Construct package details from lead info
+          const packageInfo = {
+            special_requirements: lead.special_requirements,
+            notes: lead.notes,
+            lead_guest_name: lead.lead_guest_name,
+            no_of_staff: lead.no_of_staff,
+            budget: lead.budget,
+          }
+
           setFormData((prev) => ({
             ...prev,
             customer_name: lead.customer_name || "",
@@ -76,6 +96,9 @@ export default function NewTripPage() {
             email: lead.email || "",
             destination: lead.destination || "",
             no_of_pax: lead.no_of_pax?.toString() || "",
+            pickup_date: pickupDate,
+            dropoff_date: dropoffDate,
+            package_details: JSON.stringify(packageInfo, null, 2),
           }))
         }
       }
