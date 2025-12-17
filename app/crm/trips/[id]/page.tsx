@@ -212,14 +212,47 @@ export default function TripDetailPage() {
               <CardTitle>Package Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Special Requirements</p>
-                <p className="text-sm">{trip.package_details?.special_requirements || "-"}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Notes</p>
-                <p className="text-sm">{trip.package_details?.notes || "-"}</p>
-              </div>
+              {(() => {
+                let details: any = {}
+                try {
+                  details =
+                    typeof trip.package_details === "string"
+                      ? JSON.parse(trip.package_details)
+                      : trip.package_details || {}
+                } catch (e) {
+                  details = {}
+                }
+
+                return (
+                  <>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Lead Guest Name</p>
+                        <p className="font-medium">{details.lead_guest_name || "-"}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Number of Staff</p>
+                        <p className="font-medium">{details.no_of_staff || "-"}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Budget</p>
+                        <p className="font-medium">{details.budget ? `₹${details.budget}` : "-"}</p>
+                      </div>
+                    </div>
+
+                    <div className="border-t pt-4 mt-2">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-1">Special Requirements</p>
+                        <p className="text-sm">{details.special_requirements || "-"}</p>
+                      </div>
+                      <div className="mt-4">
+                        <p className="text-sm text-muted-foreground mb-1">Notes</p>
+                        <p className="text-sm">{details.notes || "-"}</p>
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
             </CardContent>
           </Card>
 
