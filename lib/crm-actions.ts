@@ -382,6 +382,19 @@ export async function deleteTrip(id: string) {
   return { success: true }
 }
 
+export async function getTripRoomBookings(tripId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("trip_room_bookings").select("*").eq("trip_id", tripId)
+
+  if (error) {
+    console.error("[v0] Error fetching trip room bookings:", error)
+    return { success: false, error: error.message, data: [] }
+  }
+
+  return { success: true, data: data || [] }
+}
+
 export async function createTripRoomBooking(bookingData: any) {
   const supabase = await createClient()
 

@@ -7,8 +7,8 @@ import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Plus, CheckCircle2 } from "lucide-react"
-import { getTrips, getPayments, createPayment } from "@/lib/crm-actions"
+import { ArrowLeft, Plus, CheckCircle2, Hotel } from "lucide-react"
+import { getTrips, getPayments, createPayment, getTripRoomBookings } from "@/lib/crm-actions"
 import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +21,7 @@ export default function TripDetailPage() {
 
   const [trip, setTrip] = useState<any>(null)
   const [payments, setPayments] = useState<any[]>([])
+  const [roomBookings, setRoomBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showPaymentForm, setShowPaymentForm] = useState(false)
   const [paymentData, setPaymentData] = useState({
@@ -42,12 +43,19 @@ export default function TripDetailPage() {
       const foundTrip = result.data.find((t: any) => t.id === tripId)
       setTrip(foundTrip)
 
-      if (foundTrip && foundTrip.status === "confirmed") {
-        const paymentsResult = await getPayments({ tripId })
-        if (paymentsResult.success) {
-          setPayments(paymentsResult.data)
-        } else {
-          console.error("[v0] Error loading payments:", paymentsResult.error)
+      if (foundTrip) {
+        // Load payments if confirmed
+        if (foundTrip.status === "confirmed") {
+          const paymentsResult = await getPayments({ tripId })
+          if (paymentsResult.success) {
+            setPayments(paymentsResult.data)
+          }
+        }
+
+        // Load room bookings
+        const roomsResult = await getTripRoomBookings(tripId)
+        if (roomsResult.success) {
+          setRoomBookings(roomsResult.data)
         }
       }
     }
@@ -132,6 +140,7 @@ export default function TripDetailPage() {
       <Tabs defaultValue="details">
         <TabsList>
           <TabsTrigger value="details">Trip Details</TabsTrigger>
+          {roomBookings.length > 0 && <TabsTrigger value="rooms">Room Details ({roomBookings.length})</TabsTrigger>}
           {trip.status === "confirmed" && <TabsTrigger value="payments">Payments ({payments.length})</TabsTrigger>}
         </TabsList>
 
@@ -188,6 +197,48 @@ export default function TripDetailPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="rooms" className="space-y-6">
+          {roomBookings.map((room) => (
+            <Card key={room.id}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-lg font-medium">
+                  {room.property_name}
+                  {room.place && <span className="text-muted-foreground ml-2 text-sm font-normal">({room.place})</span>}
+                </CardTitle>
+                {room.booking_confirmed && (
+                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                    Confirmed
+                  </span>
+                )}
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Hotel className="mr-2 h-4 w-4" />
+                      Check-in / Check-out
+                    </div>
+                    <p className="font-medium">
+                      {room.check_in_date ? new Date(room.check_in_date).toLocaleDateString() : "N/A"} -{" "}
+                      {room.check_out_date ? new Date(room.check_out_date).toLocaleDateString() : "N/A"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Rooms</p>
+                    <p className="font-medium">{room.no_of_rooms || 0} Rooms</p>
+                  </div>
+                  {room.description && (
+                    <div className="col-span-2 space-y-1">
+                      <p className="text-sm text-muted-foreground">Description</p>
+                      <p className="text-sm">{room.description}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </TabsContent>
 
         {trip.status === "confirmed" && (
