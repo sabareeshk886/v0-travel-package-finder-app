@@ -175,69 +175,53 @@ export default function TripDetailPage() {
                 <div>
                   <p className="text-sm text-muted-foreground">Contact</p>
                   <p className="font-medium">{trip.phone}</p>
-                  {trip.email && <p className="text-sm text-muted-foreground">{trip.email}</p>}
+                  <p className="text-sm text-muted-foreground">{trip.email || "-"}</p>
                 </div>
-                {trip.pickup_point && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">Pickup Point</p>
-                    <p className="font-medium">{trip.pickup_point}</p>
-                  </div>
-                )}
-                {trip.coordinator && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">Trip Coordinator</p>
-                    <p className="font-medium">{trip.coordinator.full_name}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-sm text-muted-foreground">Pickup Point</p>
+                  <p className="font-medium">{trip.pickup_point || "-"}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Trip Coordinator</p>
+                  <p className="font-medium">{trip.coordinator?.full_name || "-"}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {(trip.bus_details || trip.driver_name) && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Transport Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  {trip.bus_details && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Bus Details</p>
-                      <p className="font-medium">{trip.bus_details}</p>
-                    </div>
-                  )}
-                  {trip.driver_name && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Driver Name</p>
-                      <p className="font-medium">{trip.driver_name}</p>
-                    </div>
-                  )}
+          <Card>
+            <CardHeader>
+              <CardTitle>Transport Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Bus Details</p>
+                  <p className="font-medium">{trip.bus_details || "-"}</p>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div>
+                  <p className="text-sm text-muted-foreground">Driver Name</p>
+                  <p className="font-medium">{trip.driver_name || "-"}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {trip.package_details && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Package Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {trip.package_details.special_requirements && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Special Requirements</p>
-                    <p className="text-sm">{trip.package_details.special_requirements}</p>
-                  </div>
-                )}
-                {trip.package_details.notes && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Notes</p>
-                    <p className="text-sm">{trip.package_details.notes}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <Card>
+            <CardHeader>
+              <CardTitle>Package Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Special Requirements</p>
+                <p className="text-sm">{trip.package_details?.special_requirements || "-"}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Notes</p>
+                <p className="text-sm">{trip.package_details?.notes || "-"}</p>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
