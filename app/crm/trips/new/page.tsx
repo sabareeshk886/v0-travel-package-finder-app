@@ -43,6 +43,18 @@ export default function NewTripPage() {
     status: "confirmed",
   })
 
+  const [roomBookings, setRoomBookings] = useState<any[]>([
+    {
+      place: "",
+      property_name: "",
+      no_of_rooms: "",
+      check_in_date: "",
+      check_out_date: "",
+      description: "",
+      booking_confirmed: false,
+    },
+  ])
+
   useEffect(() => {
     loadData()
   }, [])
@@ -80,6 +92,13 @@ export default function NewTripPage() {
 
     const defaultUserId = "00000000-0000-0000-0000-000000000000"
 
+    // Filter out empty room bookings
+    const validRoomBookings = roomBookings.filter((room) => room.place || room.property_name)
+    const formattedRoomBookings = validRoomBookings.map((room) => ({
+      ...room,
+      no_of_rooms: room.no_of_rooms ? Number.parseInt(room.no_of_rooms) : undefined,
+    }))
+
     const tripData: any = {
       ...formData,
       no_of_days: formData.no_of_days ? Number.parseInt(formData.no_of_days) : undefined,
@@ -92,6 +111,7 @@ export default function NewTripPage() {
       lead_id: formData.lead_id || undefined,
       trip_coordinator: formData.trip_coordinator || undefined,
       package_details: formData.package_details ? JSON.parse(formData.package_details) : undefined,
+      room_bookings: formattedRoomBookings,
     }
 
     // Remove empty fields
@@ -128,6 +148,33 @@ export default function NewTripPage() {
 
       return updated
     })
+  }
+
+  const handleRoomChange = (index: number, field: string, value: any) => {
+    const newRoomBookings = [...roomBookings]
+    newRoomBookings[index] = { ...newRoomBookings[index], [field]: value }
+    setRoomBookings(newRoomBookings)
+  }
+
+  const addRoomBooking = () => {
+    setRoomBookings([
+      ...roomBookings,
+      {
+        place: "",
+        property_name: "",
+        no_of_rooms: "",
+        check_in_date: "",
+        check_out_date: "",
+        description: "",
+        booking_confirmed: false,
+      },
+    ])
+  }
+
+  const removeRoomBooking = (index: number) => {
+    const newRoomBookings = [...roomBookings]
+    newRoomBookings.splice(index, 1)
+    setRoomBookings(newRoomBookings)
   }
 
   return (
@@ -266,6 +313,117 @@ export default function NewTripPage() {
                 onChange={(e) => handleChange("pickup_point", e.target.value)}
                 placeholder="e.g., Bangalore City Centre"
               />
+            </div>
+
+            {/* Room Details */}
+            <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Room Details</h3>
+                <Button type="button" variant="outline" size="sm" onClick={addRoomBooking}>
+                  Add Room
+                </Button>
+              </div>
+
+              {roomBookings.map((room, index) => (
+                <Card key={index} className="relative">
+                  <CardContent className="pt-6 space-y-4">
+                    {roomBookings.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                        onClick={() => removeRoomBooking(index)}
+                      >
+                        <span className="sr-only">Remove</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        </svg>
+                      </Button>
+                    )}
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>Place</Label>
+                        <Input
+                          value={room.place}
+                          onChange={(e) => handleRoomChange(index, "place", e.target.value)}
+                          placeholder="e.g., Munnar"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Property Name</Label>
+                        <Input
+                          value={room.property_name}
+                          onChange={(e) => handleRoomChange(index, "property_name", e.target.value)}
+                          placeholder="e.g., Tea Valley Resort"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-3">
+                      <div className="space-y-2">
+                        <Label>No. of Rooms</Label>
+                        <Input
+                          type="number"
+                          value={room.no_of_rooms}
+                          onChange={(e) => handleRoomChange(index, "no_of_rooms", e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Check-in Date</Label>
+                        <Input
+                          type="date"
+                          value={room.check_in_date}
+                          onChange={(e) => handleRoomChange(index, "check_in_date", e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Check-out Date</Label>
+                        <Input
+                          type="date"
+                          value={room.check_out_date}
+                          onChange={(e) => handleRoomChange(index, "check_out_date", e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={room.description}
+                        onChange={(e) => handleRoomChange(index, "description", e.target.value)}
+                        placeholder="Room type, meal plan, etc."
+                        rows={2}
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`confirmed-${index}`}
+                        checked={room.booking_confirmed}
+                        onChange={(e) => handleRoomChange(index, "booking_confirmed", e.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                      <Label htmlFor={`confirmed-${index}`}>Booking Confirmed</Label>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
             {/* Pricing */}

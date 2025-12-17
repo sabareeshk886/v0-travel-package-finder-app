@@ -304,16 +304,35 @@ export async function createTrip(tripData: any) {
   const timestamp = Date.now()
   const tripNumber = `TR${timestamp.toString().slice(-8)}`
 
+  // Extract room bookings if present
+  const { room_bookings, ...tripDetails } = tripData
+
   const dataWithNumber = {
-    ...tripData,
+    ...tripDetails,
     trip_number: tripNumber,
   }
 
-  const { data, error } = await supabase.from("trips").insert([dataWithNumber]).select().single()
+  const { data: trip, error } = await supabase.from("trips").insert([dataWithNumber]).select().single()
 
   if (error) {
     console.error("[v0] Error creating trip:", error)
     return { success: false, error: error.message }
+  }
+
+  // Handle room bookings
+  if (room_bookings && Array.isArray(room_bookings) && room_bookings.length > 0) {
+    const bookingsWithTripId = room_bookings.map((booking: any) => ({
+      ...booking,
+      trip_id: trip.id,
+    }))
+
+    const { error: roomError } = await supabase.from("trip_room_bookings").insert(bookingsWithTripId)
+
+    if (roomError) {
+      console.error("[v0] Error creating room bookings:", roomError)
+      // We don't fail the whole trip creation if room bookings fail, but we log it
+      // Ideally we would use a transaction but Supabase JS client doesn't support transactions directly like this
+    }
   }
 
   // Update lead status to confirmed if lead_id exists
@@ -321,7 +340,7 @@ export async function createTrip(tripData: any) {
     await supabase.from("leads").update({ status: "confirmed" }).eq("id", tripData.lead_id)
   }
 
-  return { success: true, data }
+  return { success: true, data: trip }
 }
 
 export async function updateTrip(id: string, updates: any) {
@@ -331,6 +350,19 @@ export async function updateTrip(id: string, updates: any) {
 
   if (error) {
     console.error("[v0] Error updating trip:", error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true, data }
+}
+
+export async function createTripRoomBooking(bookingData: any) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.from("trip_room_bookings").insert([bookingData]).select().single()
+
+  if (error) {
+    console.error("[v0] Error creating trip room booking:", error)
     return { success: false, error: error.message }
   }
 
