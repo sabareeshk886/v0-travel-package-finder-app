@@ -180,6 +180,15 @@ export default function EditTripPage() {
                 updated.total_amount = total.toString()
                 updated.gst_amount = gst.toFixed(2)
                 updated.grand_total = (total + gst).toFixed(2)
+            } else if (field === "total_amount") {
+                const total = Number.parseFloat(value) || 0
+                const pax = Number.parseInt(updated.no_of_pax) || 0
+                if (pax > 0) {
+                    updated.per_head_rate = (total / pax).toFixed(2)
+                }
+                const gst = total * 0.05 // 5% GST
+                updated.gst_amount = gst.toFixed(2)
+                updated.grand_total = (total + gst).toFixed(2)
             }
 
             return updated
@@ -448,7 +457,12 @@ export default function EditTripPage() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="total_amount">Total Amount (₹)</Label>
-                                <Input id="total_amount" type="number" value={formData.total_amount} disabled />
+                                <Input
+                                    id="total_amount"
+                                    type="number"
+                                    value={formData.total_amount}
+                                    onChange={(e) => handleChange("total_amount", e.target.value)}
+                                />
                             </div>
 
                             <div className="space-y-2">
