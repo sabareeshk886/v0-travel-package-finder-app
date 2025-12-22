@@ -59,6 +59,16 @@ export default function NewTripPage() {
     loadData()
   }, [])
 
+  const calculateDays = (start: string, end: string) => {
+    if (!start || !end) return ""
+    const startDate = new Date(start)
+    const endDate = new Date(end)
+    const diffTime = endDate.getTime() - startDate.getTime()
+    if (diffTime < 0) return ""
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+    return diffDays.toString()
+  }
+
   const loadData = async () => {
     const [leadsResult, usersResult] = await Promise.all([getLeads(), getUsers()])
 
@@ -80,6 +90,8 @@ export default function NewTripPage() {
             pickupDate = lead.travel_dates
           }
 
+          const noOfDays = calculateDays(pickupDate, dropoffDate)
+
           // Construct package details from lead info
           const packageInfo = {
             special_requirements: lead.special_requirements,
@@ -98,6 +110,7 @@ export default function NewTripPage() {
             no_of_pax: lead.no_of_pax?.toString() || "",
             pickup_date: pickupDate,
             dropoff_date: dropoffDate,
+            no_of_days: noOfDays,
             package_details: JSON.stringify(packageInfo, null, 2),
           }))
         }
@@ -111,8 +124,6 @@ export default function NewTripPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-
     setLoading(true)
 
     // Filter out empty room bookings
@@ -157,6 +168,13 @@ export default function NewTripPage() {
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value }
+
+      // Auto-calculate days
+      if (field === "pickup_date" || field === "dropoff_date") {
+        const start = field === "pickup_date" ? value : updated.pickup_date
+        const end = field === "dropoff_date" ? value : updated.dropoff_date
+        updated.no_of_days = calculateDays(start, end)
+      }
 
       // Auto-calculate totals
       if (field === "per_head_rate" || field === "no_of_pax") {
