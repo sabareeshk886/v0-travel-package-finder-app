@@ -189,6 +189,17 @@ export default function EditTripPage() {
                 const gst = total * 0.05 // 5% GST
                 updated.gst_amount = gst.toFixed(2)
                 updated.grand_total = (total + gst).toFixed(2)
+            } else if (field === "grand_total") {
+                const grandTotal = Number.parseFloat(value) || 0
+                const total = grandTotal / 1.05
+                const gst = grandTotal - total
+                updated.total_amount = total.toFixed(2)
+                updated.gst_amount = gst.toFixed(2)
+
+                const pax = Number.parseInt(updated.no_of_pax) || 0
+                if (pax > 0) {
+                    updated.per_head_rate = (total / pax).toFixed(2)
+                }
             }
 
             return updated
@@ -472,7 +483,13 @@ export default function EditTripPage() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="grand_total">Grand Total (₹)</Label>
-                                <Input id="grand_total" type="number" value={formData.grand_total} disabled className="font-bold" />
+                                <Input
+                                    id="grand_total"
+                                    type="number"
+                                    value={formData.grand_total}
+                                    onChange={(e) => handleChange("grand_total", e.target.value)}
+                                    className="font-bold"
+                                />
                             </div>
 
                             <div className="space-y-2">
