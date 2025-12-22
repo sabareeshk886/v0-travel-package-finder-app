@@ -40,7 +40,11 @@ export default function EditTripPage() {
         bus_details: "",
         driver_name: "",
         trip_coordinator: "",
-        package_details: "",
+        lead_guest_name: "",
+        no_of_staff: "",
+        budget: "",
+        special_requirements: "",
+        notes: "",
         status: "",
     })
 
@@ -76,7 +80,11 @@ export default function EditTripPage() {
                     bus_details: trip.bus_details || "",
                     driver_name: trip.driver_name || "",
                     trip_coordinator: trip.trip_coordinator || "",
-                    package_details: trip.package_details ? JSON.stringify(trip.package_details) : "",
+                    lead_guest_name: trip.package_details?.lead_guest_name || "",
+                    no_of_staff: trip.package_details?.no_of_staff || "",
+                    budget: trip.package_details?.budget || "",
+                    special_requirements: trip.package_details?.special_requirements || "",
+                    notes: trip.package_details?.notes || "",
                     status: trip.status || "confirmed",
                 })
             }
@@ -146,7 +154,13 @@ export default function EditTripPage() {
             gst_amount: formData.gst_amount ? Number.parseFloat(formData.gst_amount) : undefined,
             grand_total: formData.grand_total ? Number.parseFloat(formData.grand_total) : undefined,
             trip_coordinator: formData.trip_coordinator || null,
-            package_details: formData.package_details ? JSON.parse(formData.package_details) : undefined,
+            package_details: {
+                lead_guest_name: formData.lead_guest_name,
+                no_of_staff: formData.no_of_staff,
+                budget: formData.budget,
+                special_requirements: formData.special_requirements,
+                notes: formData.notes,
+            },
             room_bookings: formattedRoomBookings,
         }
 
@@ -550,15 +564,61 @@ export default function EditTripPage() {
                         </div>
 
                         {/* Package Details */}
-                        <div className="space-y-2">
-                            <Label htmlFor="package_details">Package Details (JSON format, optional)</Label>
-                            <Textarea
-                                id="package_details"
-                                value={formData.package_details}
-                                onChange={(e) => handleChange("package_details", e.target.value)}
-                                rows={4}
-                                placeholder='{"inclusions": ["Accommodation", "Meals"], "exclusions": ["Personal expenses"], "special_requirements": "...", "notes": "..."}'
-                            />
+                        <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
+                            <h3 className="text-lg font-semibold">Package Information</h3>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="lead_guest_name">Lead Guest Name</Label>
+                                    <Input
+                                        id="lead_guest_name"
+                                        value={formData.lead_guest_name}
+                                        onChange={(e) => handleChange("lead_guest_name", e.target.value)}
+                                        placeholder="Primary guest name"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="no_of_staff">Number of Staff</Label>
+                                    <Input
+                                        id="no_of_staff"
+                                        type="number"
+                                        value={formData.no_of_staff}
+                                        onChange={(e) => handleChange("no_of_staff", e.target.value)}
+                                        placeholder="e.g., 2"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="budget">Budget (₹)</Label>
+                                    <Input
+                                        id="budget"
+                                        type="number"
+                                        value={formData.budget}
+                                        onChange={(e) => handleChange("budget", e.target.value)}
+                                        placeholder="e.g., 50000"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="special_requirements">Special Requirements</Label>
+                                <Textarea
+                                    id="special_requirements"
+                                    value={formData.special_requirements}
+                                    onChange={(e) => handleChange("special_requirements", e.target.value)}
+                                    rows={3}
+                                    placeholder="Any specific requirements..."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="notes">Notes</Label>
+                                <Textarea
+                                    id="notes"
+                                    value={formData.notes}
+                                    onChange={(e) => handleChange("notes", e.target.value)}
+                                    rows={3}
+                                    placeholder="Additional notes..."
+                                />
+                            </div>
                         </div>
 
                         <div className="flex gap-4">
