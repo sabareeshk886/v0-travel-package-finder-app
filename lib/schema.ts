@@ -8,8 +8,7 @@ const timestamps = {
 
 // Region Tables
 export const south = pgTable('south', {
-    id: serial('id').primaryKey(),
-    sl_code: text('sl_code').notNull(),
+    sl_code: text('sl_code').notNull().primaryKey(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -38,8 +37,7 @@ export const south = pgTable('south', {
 });
 
 export const north = pgTable('north', {
-    id: serial('id').primaryKey(),
-    sl_code: text('sl_code').notNull(),
+    sl_code: text('sl_code').notNull().primaryKey(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -68,8 +66,7 @@ export const north = pgTable('north', {
 });
 
 export const northeast = pgTable('northeast', {
-    id: serial('id').primaryKey(),
-    sl_code: text('sl_code').notNull(),
+    sl_code: text('sl_code').notNull().primaryKey(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -98,8 +95,7 @@ export const northeast = pgTable('northeast', {
 });
 
 export const international = pgTable('international', {
-    id: serial('id').primaryKey(),
-    sl_code: text('sl_code').notNull(),
+    sl_code: text('sl_code').notNull().primaryKey(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -128,8 +124,7 @@ export const international = pgTable('international', {
 });
 
 export const kashmir = pgTable('kashmir', {
-    id: serial('id').primaryKey(),
-    sl_code: text('sl_code').notNull(),
+    sl_code: text('sl_code').notNull().primaryKey(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -185,8 +180,10 @@ export const kashmir = pgTable('kashmir', {
 });
 
 // CRM Tables
+// Note: Users table usually maps to auth.users which has UUIDs. Keeping UUID here for safety if linking to Auth.
+// If it fails, we revert to text.
 export const users = pgTable('users', {
-    id: uuid('id').primaryKey(), // Maps to auth.users
+    id: uuid('id').primaryKey(),
     email: text('email').notNull().unique(),
     fullName: text('full_name').notNull(),
     role: text('role').notNull(),
@@ -196,7 +193,7 @@ export const users = pgTable('users', {
 });
 
 export const leads = pgTable('leads', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     leadSource: text('lead_source').notNull(),
     customerName: text('customer_name').notNull(),
     phone: text('phone').notNull(),
@@ -218,8 +215,8 @@ export const leads = pgTable('leads', {
 });
 
 export const followUps = pgTable('follow_ups', {
-    id: uuid('id').defaultRandom().primaryKey(),
-    leadId: uuid('lead_id').references(() => leads.id, { onDelete: 'cascade' }),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    leadId: text('lead_id').references(() => leads.id, { onDelete: 'cascade' }),
     followUpDate: date('follow_up_date').notNull(),
     followUpTime: time('follow_up_time'),
     notes: text('notes'),
@@ -229,8 +226,8 @@ export const followUps = pgTable('follow_ups', {
 });
 
 export const quotations = pgTable('quotations', {
-    id: uuid('id').defaultRandom().primaryKey(),
-    leadId: uuid('lead_id').references(() => leads.id, { onDelete: 'cascade' }),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    leadId: text('lead_id').references(() => leads.id, { onDelete: 'cascade' }),
     quotationNumber: text('quotation_number').unique().notNull(),
     destination: text('destination').notNull(),
     travelDates: text('travel_dates').notNull(),
@@ -249,10 +246,10 @@ export const quotations = pgTable('quotations', {
 });
 
 export const trips = pgTable('trips', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     tripNumber: text('trip_number').unique().notNull(),
-    leadId: uuid('lead_id').references(() => leads.id),
-    quotationId: uuid('quotation_id').references(() => quotations.id),
+    leadId: text('lead_id').references(() => leads.id),
+    quotationId: text('quotation_id').references(() => quotations.id),
     customerName: text('customer_name').notNull(),
     phone: text('phone').notNull(),
     email: text('email'),
@@ -276,7 +273,7 @@ export const trips = pgTable('trips', {
 });
 
 export const vendors = pgTable('vendors', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     vendorName: text('vendor_name').notNull(),
     category: text('category').notNull(),
     contactPerson: text('contact_person'),
@@ -293,8 +290,8 @@ export const vendors = pgTable('vendors', {
 });
 
 export const vendorPriceLists = pgTable('vendor_price_lists', {
-    id: uuid('id').defaultRandom().primaryKey(),
-    vendorId: uuid('vendor_id').references(() => vendors.id, { onDelete: 'cascade' }),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    vendorId: text('vendor_id').references(() => vendors.id, { onDelete: 'cascade' }),
     itemName: text('item_name').notNull(),
     location: text('location'),
     season: text('season'),
@@ -307,9 +304,9 @@ export const vendorPriceLists = pgTable('vendor_price_lists', {
 });
 
 export const tripVendors = pgTable('trip_vendors', {
-    id: uuid('id').defaultRandom().primaryKey(),
-    tripId: uuid('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
-    vendorId: uuid('vendor_id').references(() => vendors.id),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    tripId: text('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
+    vendorId: text('vendor_id').references(() => vendors.id),
     serviceType: text('service_type').notNull(),
     serviceDate: date('service_date'),
     amount: numeric('amount').notNull(),
@@ -319,9 +316,9 @@ export const tripVendors = pgTable('trip_vendors', {
 });
 
 export const payments = pgTable('payments', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     paymentType: text('payment_type').notNull(),
-    tripId: uuid('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
+    tripId: text('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
     customerName: text('customer_name'),
     amount: numeric('amount').notNull(),
     paymentMode: text('payment_mode').notNull(),
@@ -334,10 +331,10 @@ export const payments = pgTable('payments', {
 });
 
 export const expenses = pgTable('expenses', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     expenseNumber: text('expense_number').unique().notNull(),
-    tripId: uuid('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
-    vendorId: uuid('vendor_id').references(() => vendors.id),
+    tripId: text('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
+    vendorId: text('vendor_id').references(() => vendors.id),
     category: text('category').notNull(),
     description: text('description').notNull(),
     amount: numeric('amount').notNull(),
@@ -350,7 +347,7 @@ export const expenses = pgTable('expenses', {
 });
 
 export const tripReports = pgTable('trip_reports', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     customerName: text('customer_name'),
     pickupDate: text('pickup_date'),
     dropoffDate: text('dropoff_date'),
@@ -383,7 +380,7 @@ export const tripReports = pgTable('trip_reports', {
 });
 
 export const roomBookings = pgTable('room_bookings', {
-    id: uuid('id').defaultRandom().primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
     checkInDate: text('check_in_date'),
     checkOutDate: text('check_out_date'),
     place: text('place'),
@@ -398,8 +395,8 @@ export const roomBookings = pgTable('room_bookings', {
 });
 
 export const tripRoomBookings = pgTable('trip_room_bookings', {
-    id: uuid('id').defaultRandom().primaryKey(),
-    tripId: uuid('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    tripId: text('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
     place: text('place'),
     propertyName: text('property_name'),
     checkInDate: date('check_in_date'),
