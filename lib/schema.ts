@@ -8,7 +8,8 @@ const timestamps = {
 
 // Region Tables
 export const south = pgTable('south', {
-    sl_code: text('sl_code').notNull().primaryKey(),
+    id: serial('id').primaryKey(),
+    sl_code: text('sl_code').notNull(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -37,7 +38,8 @@ export const south = pgTable('south', {
 });
 
 export const north = pgTable('north', {
-    sl_code: text('sl_code').notNull().primaryKey(),
+    id: serial('id').primaryKey(),
+    sl_code: text('sl_code').notNull(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -66,7 +68,8 @@ export const north = pgTable('north', {
 });
 
 export const northeast = pgTable('northeast', {
-    sl_code: text('sl_code').notNull().primaryKey(),
+    id: serial('id').primaryKey(),
+    sl_code: text('sl_code').notNull(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -95,7 +98,8 @@ export const northeast = pgTable('northeast', {
 });
 
 export const international = pgTable('international', {
-    sl_code: text('sl_code').notNull().primaryKey(),
+    id: serial('id').primaryKey(),
+    sl_code: text('sl_code').notNull(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
@@ -124,7 +128,8 @@ export const international = pgTable('international', {
 });
 
 export const kashmir = pgTable('kashmir', {
-    sl_code: text('sl_code').notNull().primaryKey(),
+    id: serial('id').primaryKey(),
+    sl_code: text('sl_code').notNull(),
     trip_code: text('trip_code').notNull(),
     details: text('details'),
     itinerary: text('itinerary'),
