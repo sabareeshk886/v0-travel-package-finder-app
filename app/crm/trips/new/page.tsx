@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Save } from "lucide-react"
-import { createTrip, getLeads, getUsers } from "@/lib/crm-actions"
+import { createTripAction as createTrip, getLeads, getUsers } from "@/lib/crm-actions"
 import Link from "next/link"
 
 export default function NewTripPage() {
@@ -102,6 +102,7 @@ export default function NewTripPage() {
             phone: lead.phone || "",
             email: lead.email || "",
             destination: lead.destination || "",
+            pickup_point: lead.pickup_point || "",
             no_of_pax: lead.no_of_pax?.toString() || "",
             pickup_date: pickupDate,
             dropoff_date: dropoffDate,

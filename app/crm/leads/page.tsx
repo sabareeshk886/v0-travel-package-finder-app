@@ -45,6 +45,7 @@ export default function LeadsPage() {
       quoted: "bg-purple-100 text-purple-700",
       follow_up: "bg-orange-100 text-orange-700",
       confirmed: "bg-green-100 text-green-700",
+      converted: "bg-teal-100 text-teal-700", // Added style
       lost: "bg-red-100 text-red-700",
       cancelled: "bg-gray-100 text-gray-700",
     }
@@ -119,6 +120,7 @@ export default function LeadsPage() {
                 <SelectItem value="quoted">Quoted</SelectItem>
                 <SelectItem value="follow_up">Follow Up</SelectItem>
                 <SelectItem value="confirmed">Confirmed</SelectItem>
+                <SelectItem value="converted">Converted</SelectItem>
                 <SelectItem value="lost">Lost</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>

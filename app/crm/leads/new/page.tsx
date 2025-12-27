@@ -23,6 +23,7 @@ export default function NewLeadPage() {
     phone: "",
     email: "",
     destination: "",
+    pickup_point: "",
     travel_date_from: "",
     travel_date_to: "",
     no_of_pax: "",
@@ -53,6 +54,7 @@ export default function NewLeadPage() {
       phone: formData.phone,
       email: formData.email || undefined,
       destination: formData.destination || undefined,
+      pickup_point: formData.pickup_point || undefined,
       travel_dates: travelDates,
       no_of_pax: formData.no_of_pax ? Number.parseInt(formData.no_of_pax) : undefined,
       no_of_staff: formData.no_of_staff ? Number.parseInt(formData.no_of_staff) : undefined,
@@ -183,6 +185,16 @@ export default function NewLeadPage() {
                   value={formData.destination}
                   onChange={(e) => handleChange("destination", e.target.value)}
                   placeholder="e.g., Kashmir, Kerala, Rajasthan"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pickup_point">Pickup Point</Label>
+                <Input
+                  id="pickup_point"
+                  value={formData.pickup_point}
+                  onChange={(e) => handleChange("pickup_point", e.target.value)}
+                  placeholder="e.g., Airport, Railway Station"
                 />
               </div>
 

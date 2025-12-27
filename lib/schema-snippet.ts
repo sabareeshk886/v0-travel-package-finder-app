@@ -1,0 +1,16 @@
+export const tripRoomBookings = pgTable('trip_room_bookings', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tripId: uuid('trip_id').references(() => trips.id, { onDelete: 'cascade' }),
+    checkInDate: date('check_in_date'),
+    checkOutDate: date('check_out_date'),
+    category: text('category'),
+    sharingType: text('sharing_type'),
+    capacity: integer('capacity'),
+    description: text('description'),
+    notes: text('notes'),
+    status: text('status').default('pending'),
+    rate: numeric('rate'),
+    adults: integer('adults'),
+    children: integer('children'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});

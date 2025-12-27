@@ -8,6 +8,13 @@
       "when": 1765347412527,
       "tag": "0000_powerful_rawhide_kid",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766428260236,
+      "tag": "0001_cool_wilson_fisk",
+      "breakpoints": true
     }
   ]
 }

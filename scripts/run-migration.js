@@ -1,29 +1,38 @@
-const { Pool } = require('pg');
+const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    // ssl: { rejectUnauthorized: false } 
-});
+// Load environment variables
+dotenv.config({ path: '.env.local' });
 
-async function migrate() {
+async function runMigration() {
+    const client = new Client({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false } // Required for Supabase/Neon usually
+    });
+
     try {
-        console.log("Reading migration file...");
-        const sqlPath = path.join(__dirname, '../drizzle/0000_powerful_rawhide_kid.sql');
-        const sql = fs.readFileSync(sqlPath, 'utf8');
+        await client.connect();
+        console.log('Connected to database.');
 
-        console.log("Executing migration...");
-        const client = await pool.connect();
+        const migrationFile = process.argv[2];
+        if (!migrationFile) {
+            console.error('Please provide a migration file path.');
+            process.exit(1);
+        }
+
+        const sql = fs.readFileSync(migrationFile, 'utf8');
+        console.log(`Running migration: ${migrationFile}`);
+
         await client.query(sql);
-        console.log("Migration completed successfully!");
-
-        client.release();
-        process.exit(0);
-    } catch (error) {
-        console.error("Migration failed:", error);
+        console.log('Migration completed successfully.');
+    } catch (err) {
+        console.error('Error running migration:', err);
         process.exit(1);
+    } finally {
+        await client.end();
     }
 }
 
-migrate();
+runMigration();

@@ -9,6 +9,7 @@ import {
   international,
   tripReports,
   roomBookings,
+  tripRoomBookings,
   expenses,
   leads,
   users,

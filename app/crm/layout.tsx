@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Users,
   FileText,
+  ClipboardList,
   Plane,
   Building2,
   DollarSign,
@@ -30,6 +31,7 @@ export default function CRMLayout({ children }: { children: React.ReactNode }) {
     { name: "Quotations", href: "/crm/quotations", icon: FileText },
     { name: "Trips", href: "/crm/trips", icon: Plane },
     { name: "Vendors", href: "/crm/vendors", icon: Building2 },
+    { name: "Trip Reports", href: "/crm/trip-reports", icon: ClipboardList },
     { name: "Payments", href: "/crm/payments", icon: DollarSign },
     { name: "Expenses", href: "/crm/expenses", icon: Receipt },
   ]
