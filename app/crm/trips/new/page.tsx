@@ -187,23 +187,23 @@ export default function NewTripPage() {
         const rate = Number.parseFloat(field === "per_head_rate" ? value : updated.per_head_rate) || 0
         const pax = Number.parseInt(field === "no_of_pax" ? value : updated.no_of_pax) || 0
         const total = rate * pax
-        const gst = total * 0.05 // 5% GST
+        const gst = 0
         updated.total_amount = total.toString()
-        updated.gst_amount = gst.toFixed(2)
-        updated.grand_total = (total + gst).toFixed(2)
+        updated.gst_amount = gst.toFixed(2) // keeping checks happy but 0
+        updated.grand_total = total.toFixed(2)
       } else if (field === "total_amount") {
         const total = Number.parseFloat(value) || 0
         const pax = Number.parseInt(updated.no_of_pax) || 0
         if (pax > 0) {
           updated.per_head_rate = (total / pax).toFixed(2)
         }
-        const gst = total * 0.05 // 5% GST
+        const gst = 0
         updated.gst_amount = gst.toFixed(2)
-        updated.grand_total = (total + gst).toFixed(2)
+        updated.grand_total = total.toFixed(2)
       } else if (field === "grand_total") {
         const grandTotal = Number.parseFloat(value) || 0
-        const total = grandTotal / 1.05
-        const gst = grandTotal - total
+        const total = grandTotal
+        const gst = 0
         updated.total_amount = total.toFixed(2)
         updated.gst_amount = gst.toFixed(2)
 
@@ -531,10 +531,7 @@ export default function NewTripPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="gst_amount">GST Amount (₹)</Label>
-                <Input id="gst_amount" type="number" value={formData.gst_amount} disabled />
-              </div>
+              {/* GST Field Removed */}
 
               <div className="space-y-2">
                 <Label htmlFor="grand_total">Grand Total (₹)</Label>
