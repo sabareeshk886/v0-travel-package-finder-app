@@ -11,7 +11,10 @@ if (!process.env.DATABASE_URL) {
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
+    max: 1, // Limit to 1 connection per serverless function instance to prevent exhaustion
+    connectionTimeoutMillis: 5000, // Fail fast if connection takes too long
+    idleTimeoutMillis: 20000, // Close idle connections to free up resources
 });
 
 export const db = drizzle(pool, { schema });
