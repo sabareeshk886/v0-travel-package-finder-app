@@ -510,3 +510,33 @@ export async function createRoomConfig(data: any) {
 
   return createVendorRoomConfig(priceListData)
 }
+
+export async function ensureSchemaCompatibility() {
+  try {
+    // Self-healing schema for 'leads' table
+    await db.execute(sql`
+      ALTER TABLE leads 
+      ADD COLUMN IF NOT EXISTS lead_source text,
+      ADD COLUMN IF NOT EXISTS customer_name text,
+      ADD COLUMN IF NOT EXISTS phone text,
+      ADD COLUMN IF NOT EXISTS email text,
+      ADD COLUMN IF NOT EXISTS destination text,
+      ADD COLUMN IF NOT EXISTS travel_dates text,
+      ADD COLUMN IF NOT EXISTS no_of_pax integer,
+      ADD COLUMN IF NOT EXISTS no_of_staff integer,
+      ADD COLUMN IF NOT EXISTS lead_guest_name text,
+      ADD COLUMN IF NOT EXISTS pickup_point text,
+      ADD COLUMN IF NOT EXISTS budget numeric,
+      ADD COLUMN IF NOT EXISTS special_requirements text,
+      ADD COLUMN IF NOT EXISTS assigned_to uuid,
+      ADD COLUMN IF NOT EXISTS priority text DEFAULT 'medium',
+      ADD COLUMN IF NOT EXISTS notes text,
+      ADD COLUMN IF NOT EXISTS created_by uuid;
+    `);
+    console.log("✅ Schema compatibility check passed (columns added if missing).");
+    return { success: true };
+  } catch (error: any) {
+    console.error("❌ Schema auto-fix failed:", error);
+    return { success: false, error: error.message };
+  }
+}

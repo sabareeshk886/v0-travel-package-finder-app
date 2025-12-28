@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, FileText, Plane, DollarSign, TrendingUp, TrendingDown, Calendar, AlertCircle } from "lucide-react"
-import { getLeads, getQuotations, getTrips, getPayments, getExpenses, checkCRMTablesExist } from "@/lib/crm-actions"
+import { getLeads, getQuotations, getTrips, getPayments, getExpenses, checkCRMTablesExist, ensureSchemaCompatibility } from "@/lib/crm-actions"
 import Link from "next/link"
 
 export default function CRMDashboard() {
@@ -25,7 +25,18 @@ export default function CRMDashboard() {
   const [setupError, setSetupError] = useState("")
 
   useEffect(() => {
-    loadDashboardData()
+    async function init() {
+      // 1. Diagnostics / Auto-fix
+      try {
+        await ensureSchemaCompatibility();
+      } catch (e) {
+        console.error("Auto-fix error:", e);
+      }
+
+      // 2. Load Data
+      loadDashboardData()
+    }
+    init()
   }, [])
 
   const loadDashboardData = async () => {
