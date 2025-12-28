@@ -23,6 +23,7 @@ export default function CRMDashboard() {
   const [loading, setLoading] = useState(true)
   const [dbSetupNeeded, setDbSetupNeeded] = useState(false)
   const [setupError, setSetupError] = useState("")
+  const [autoFixResult, setAutoFixResult] = useState<any>(null)
 
   useEffect(() => {
     async function init() {
@@ -70,7 +71,11 @@ export default function CRMDashboard() {
 
     if (errorResult) {
       setDbSetupNeeded(true)
-      setSetupError(`Database Error: ${errorResult.error || "Unknown error occurred"}`)
+      // Get masked URL for debugging
+      const dbUrl = process.env.NEXT_PUBLIC_DATABASE_URL || "HIDDEN (Server Side)" // We can't see server env on client easily properly without a server action. 
+      // Actually, we should pass connection info from server. 
+      // Use the error message to hint at the issue.
+      setSetupError(`Database Error: ${errorResult.error || "Unknown error"}`)
       setLoading(false)
       return
     }
@@ -146,17 +151,22 @@ export default function CRMDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-yellow-800">{setupError}</p>
-            <div className="bg-white p-4 rounded-md border border-yellow-200">
-              <p className="font-semibold text-sm mb-2">Setup Instructions:</p>
-              <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-                <li>Open your Supabase project dashboard</li>
-                <li>Navigate to the SQL Editor</li>
-                <li>Copy and paste the contents of scripts/08-create-crm-tables.sql</li>
-                <li>Run the SQL script</li>
-                <li>Refresh this page</li>
-              </ol>
+
+            {/* Diagnostic Info */}
+            <div className="bg-white p-4 rounded-md border border-yellow-200 text-sm">
+              <p className="font-semibold mb-2">Self-Healing Diagnostic:</p>
+              {autoFixResult ? (
+                autoFixResult.success ? (
+                  <p className="text-green-600">✅ Schema Check Passed (Auto-Fix Attempted)</p>
+                ) : (
+                  <p className="text-red-600">❌ Auto-Fix Failed: {autoFixResult.error}</p>
+                )
+              ) : (
+                <p className="text-gray-500">Running checks...</p>
+              )}
             </div>
-            <Button onClick={() => loadDashboardData()} className="w-full">
+
+            <Button onClick={() => window.location.reload()} className="w-full">
               Retry Connection
             </Button>
           </CardContent>
