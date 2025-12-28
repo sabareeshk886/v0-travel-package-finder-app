@@ -52,14 +52,13 @@ export default function CRMDashboard() {
       getExpenses(),
     ])
 
-    const allResults = [leadsRes, quotationsRes, tripsRes, paymentsRes, expensesRes]
-    const hasSetupError = allResults.some((res) => !res.success && res.error?.includes("schema cache"))
 
-    if (hasSetupError) {
+    const allResults = [leadsRes, quotationsRes, tripsRes, paymentsRes, expensesRes]
+    const errorResult = allResults.find((res) => !res.success)
+
+    if (errorResult) {
       setDbSetupNeeded(true)
-      setSetupError(
-        "Database tables need to be created. Please run the SQL script: scripts/08-create-crm-tables.sql in your Supabase SQL Editor.",
-      )
+      setSetupError(`Database Error: ${errorResult.error || "Unknown error occurred"}`)
       setLoading(false)
       return
     }
