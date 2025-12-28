@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, FileText, Plane, DollarSign, TrendingUp, TrendingDown, Calendar, AlertCircle } from "lucide-react"
-import { getLeads, getQuotations, getTrips, getPayments, getExpenses, checkCRMTablesExist } from "@/lib/crm-actions"
+import { getLeads, getQuotations, getTrips, getPayments, getExpenses, checkCRMTablesExist, debugConnection } from "@/lib/crm-actions"
 import Link from "next/link"
 
 export default function CRMDashboard() {
@@ -56,9 +56,22 @@ export default function CRMDashboard() {
     const allResults = [leadsRes, quotationsRes, tripsRes, paymentsRes, expensesRes]
     const errorResult = allResults.find((res) => !res.success)
 
+
     if (errorResult) {
       setDbSetupNeeded(true)
-      setSetupError(`Database Error: ${errorResult.error || "Unknown error occurred"}`)
+
+      checkCRMTablesExist().then(() => {
+        debugConnection().then((debugRes) => {
+          let extraInfo = "";
+          if (debugRes.success && debugRes.info) {
+            extraInfo = `\n\nDiagnostic Info:\nURL Prefix: ${debugRes.info.maskedUrl}\nDB Name: ${debugRes.info.dbName}\nTable Count (public): ${debugRes.info.tableCount}\nEnv Var Present: ${debugRes.info.envVarPresent}`;
+          } else {
+            extraInfo = `\n\nDiagnostic Failed: ${debugRes.error || "Unknown"}`
+          }
+          setSetupError(`Database Error: ${errorResult.error || "Unknown error occurred"}${extraInfo}`)
+        })
+      });
+
       setLoading(false)
       return
     }

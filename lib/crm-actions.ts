@@ -20,8 +20,41 @@ import { revalidatePath } from "next/cache"
 // --- Helper Actions ---
 
 
+
 export async function checkCRMTablesExist() {
   return { exists: true };
+}
+
+export async function debugConnection() {
+  try {
+    const url = process.env.DATABASE_URL || "";
+    // Mask the URL for safety
+    const maskedUrl = url.length > 10 ? `${url.substring(0, 15)}...` : "NOT_SET";
+
+    // Check DB name
+    const dbNameRes = await db.execute(sql`SELECT current_database()`);
+    const dbName = dbNameRes.rows[0].current_database;
+
+    // Check table count
+    const tablesRes = await db.execute(sql`SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'`);
+    const tableCount = tablesRes.rows[0].count;
+
+    return {
+      success: true,
+      info: {
+        maskedUrl,
+        dbName,
+        tableCount,
+        envVarPresent: !!process.env.DATABASE_URL
+      }
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message,
+      detailedError: JSON.stringify(error, Object.getOwnPropertyNames(error))
+    };
+  }
 }
 
 // --- Lead Management Actions ---
