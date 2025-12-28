@@ -21,7 +21,7 @@ import { revalidatePath } from "next/cache"
 
 
 export async function checkCRMTablesExist() {
-  return true;
+  return { exists: true };
 }
 
 // --- Lead Management Actions ---
