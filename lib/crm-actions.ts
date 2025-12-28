@@ -61,7 +61,17 @@ export async function getLeads(filters?: {
     console.error("Error fetching leads:", error)
     const dbUrl = process.env.DATABASE_URL || "NOT_SET";
     const maskedUrl = dbUrl.length > 10 ? dbUrl.replace(/:[^:@]*@/, ':****@') : dbUrl;
-    return { success: false, error: `${error.message} (DB: ${maskedUrl})`, data: [] }
+
+    // Construct a more detailed error message
+    const errorDetails = `
+      Message: ${error.message}
+      Code: ${error.code || 'N/A'}
+      Detail: ${error.detail || 'N/A'}
+      Hint: ${error.hint || 'N/A'}
+      DB: ${maskedUrl}
+    `.trim();
+
+    return { success: false, error: errorDetails, data: [] }
   }
 }
 

@@ -150,7 +150,7 @@ export default function CRMDashboard() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-yellow-800">{setupError}</p>
+            <p className="text-yellow-800 whitespace-pre-wrap text-xs font-mono">{setupError}</p>
 
             {/* Diagnostic Info */}
             <div className="bg-white p-4 rounded-md border border-yellow-200 text-sm">
