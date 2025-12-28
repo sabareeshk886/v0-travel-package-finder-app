@@ -25,46 +25,6 @@ export async function checkCRMTablesExist() {
   return { exists: true };
 }
 
-export async function debugConnection() {
-  try {
-    const url = process.env.DATABASE_URL || "";
-    // Mask the URL for safety
-    const maskedUrl = url.length > 10 ? `${url.substring(0, 15)}...` : "NOT_SET";
-
-    // Check DB name
-    const dbNameRes = await db.execute(sql`SELECT current_database()`);
-    const dbName = dbNameRes.rows[0].current_database;
-
-    // Check table count
-    const tablesRes = await db.execute(sql`SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public'`);
-    const tableCount = tablesRes.rows[0].count;
-
-    return {
-      success: true,
-      info: {
-        maskedUrl,
-        dbName,
-        tableCount,
-        envVarPresent: !!process.env.DATABASE_URL
-      }
-    };
-  } catch (error: any) {
-    // Return FULL error details for debugging
-    return {
-      success: false,
-      error: error.message,
-      detailedError: JSON.stringify({
-        message: error.message,
-        stack: error.stack,
-        code: error.code,
-        detail: error.detail,
-        hint: error.hint,
-        ...error
-      }, null, 2)
-    };
-  }
-}
-
 // --- Lead Management Actions ---
 
 export async function getLeads(filters?: {
