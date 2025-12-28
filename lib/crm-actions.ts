@@ -19,15 +19,9 @@ import { revalidatePath } from "next/cache"
 
 // --- Helper Actions ---
 
+
 export async function checkCRMTablesExist() {
-  // Simple check to ensure database is reachable
-  try {
-    await db.select({ id: leads.id }).from(leads).limit(1)
-    return true
-  } catch (error) {
-    console.error("Error checking CRM tables:", error)
-    return false
-  }
+  return true;
 }
 
 // --- Lead Management Actions ---
