@@ -17,6 +17,45 @@ import {
 import { eq, like, or, and, desc, ne, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
+import { db, usedDbUrl } from "./db"
+import { Pool } from 'pg';
+
+export async function checkConnectionHealth() {
+  const results: any = { envVar: process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@') };
+
+  // Test 1: Current Global Pool (Port 6543 likely)
+  try {
+    await db.execute(sql`SELECT 1`);
+    results.globalPool = "✅ Connected";
+  } catch (e: any) {
+    results.globalPool = `❌ Failed: ${e.message}`;
+  }
+
+  // Test 2: Direct 5432 (Session Mode) - New Client
+  try {
+    const directUrl = process.env.DATABASE_URL || "";
+    const p1 = new Pool({ connectionString: directUrl, ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 3000 });
+    await p1.query('SELECT 1');
+    await p1.end();
+    results.directPort5432 = "✅ Connected";
+  } catch (e: any) {
+    results.directPort5432 = `❌ Failed: ${e.message}`;
+  }
+
+  // Test 3: Pooler 6543 (Transaction Mode) - New Client
+  try {
+    const poolerUrl = (process.env.DATABASE_URL || "").replace(":5432", ":6543");
+    const p2 = new Pool({ connectionString: poolerUrl, ssl: { rejectUnauthorized: false }, connectionTimeoutMillis: 3000 });
+    await p2.query('SELECT 1');
+    await p2.end();
+    results.poolerPort6543 = "✅ Connected";
+  } catch (e: any) {
+    results.poolerPort6543 = `❌ Failed: ${e.message}`;
+  }
+
+  return results;
+}
+
 // --- Helper Actions ---
 
 
@@ -525,7 +564,10 @@ export async function createRoomConfig(data: any) {
 
 export async function ensureSchemaCompatibility() {
   try {
-    // 1. Get Connection Details for Debugging
+    // 1. Run Deep Connection Check
+    const health = await checkConnectionHealth();
+
+    // 2. Get Connection Details for Debugging
     const url = process.env.DATABASE_URL || "";
     const maskedUrl = url.replace(/:[^:@]*@/, ':****@');
 

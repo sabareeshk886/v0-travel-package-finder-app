@@ -21,4 +21,7 @@ const pool = new Pool({
     idleTimeoutMillis: 20000, // Close idle connections to free up resources
 });
 
+// Export the URL effectively used so we can debug which one caused the error
+export const usedDbUrl = poolerUrl;
+
 export const db = drizzle(pool, { schema });
