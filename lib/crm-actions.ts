@@ -49,10 +49,18 @@ export async function debugConnection() {
       }
     };
   } catch (error: any) {
+    // Return FULL error details for debugging
     return {
       success: false,
       error: error.message,
-      detailedError: JSON.stringify(error, Object.getOwnPropertyNames(error))
+      detailedError: JSON.stringify({
+        message: error.message,
+        stack: error.stack,
+        code: error.code,
+        detail: error.detail,
+        hint: error.hint,
+        ...error
+      }, null, 2)
     };
   }
 }
