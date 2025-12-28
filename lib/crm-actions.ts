@@ -1,6 +1,6 @@
 "use server"
 
-import { db } from "./db"
+
 import {
   leads,
   followUps,
@@ -98,7 +98,8 @@ export async function getLeads(filters?: {
     return { success: true, data: result }
   } catch (error: any) {
     console.error("Error fetching leads:", error)
-    const dbUrl = process.env.DATABASE_URL || "NOT_SET";
+    // Use the ACTUAL url that was used for connection
+    const dbUrl = usedDbUrl || "NOT_SET";
     const maskedUrl = dbUrl.length > 10 ? dbUrl.replace(/:[^:@]*@/, ':****@') : dbUrl;
 
     // Construct a more detailed error message
@@ -604,6 +605,7 @@ export async function ensureSchemaCompatibility() {
 
     return {
       success: true,
+      connectionHealth: health,
       debug: {
         maskedUrl,
         columnsFound: columns
@@ -611,10 +613,12 @@ export async function ensureSchemaCompatibility() {
     };
   } catch (error: any) {
     console.error("❌ Schema auto-fix failed:", error);
+    const health = await checkConnectionHealth().catch(e => ({ error: e.message }));
     const url = process.env.DATABASE_URL || "";
     return {
       success: false,
       error: error.message,
+      connectionHealth: health,
       debug: {
         maskedUrl: url.replace(/:[^:@]*@/, ':****@'),
         columnsFound: []
