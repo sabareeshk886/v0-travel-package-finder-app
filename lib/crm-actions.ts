@@ -513,7 +513,11 @@ export async function createRoomConfig(data: any) {
 
 export async function ensureSchemaCompatibility() {
   try {
-    // Self-healing schema for 'leads' table
+    // 1. Get Connection Details for Debugging
+    const url = process.env.DATABASE_URL || "";
+    const maskedUrl = url.replace(/:[^:@]*@/, ':****@');
+
+    // 2. Self-healing schema for 'leads' table
     await db.execute(sql`
       ALTER TABLE leads 
       ADD COLUMN IF NOT EXISTS lead_source text,
@@ -533,10 +537,34 @@ export async function ensureSchemaCompatibility() {
       ADD COLUMN IF NOT EXISTS notes text,
       ADD COLUMN IF NOT EXISTS created_by uuid;
     `);
-    console.log("✅ Schema compatibility check passed (columns added if missing).");
-    return { success: true };
+
+    // 3. Verify what columns are actually there now
+    const columnsRes = await db.execute(sql`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'leads'
+    `);
+    const columns = columnsRes.rows.map((r: any) => r.column_name);
+
+    console.log("✅ Schema compatibility check passed.");
+
+    return {
+      success: true,
+      debug: {
+        maskedUrl,
+        columnsFound: columns
+      }
+    };
   } catch (error: any) {
     console.error("❌ Schema auto-fix failed:", error);
-    return { success: false, error: error.message };
+    const url = process.env.DATABASE_URL || "";
+    return {
+      success: false,
+      error: error.message,
+      debug: {
+        maskedUrl: url.replace(/:[^:@]*@/, ':****@'),
+        columnsFound: []
+      }
+    };
   }
 }
