@@ -66,7 +66,9 @@ export default function CRMDashboard() {
           if (debugRes.success && debugRes.info) {
             extraInfo = `\n\nDiagnostic Info:\nURL Prefix: ${debugRes.info.maskedUrl}\nDB Name: ${debugRes.info.dbName}\nTable Count (public): ${debugRes.info.tableCount}\nEnv Var Present: ${debugRes.info.envVarPresent}`;
           } else {
-            extraInfo = `\n\nDiagnostic Failed: ${debugRes.error || "Unknown"}`
+            // Display the FULL JSON error if available, otherwise just the message
+            const details = debugRes.detailedError || debugRes.error || "Unknown";
+            extraInfo = `\n\nDiagnostic Failed: ${details}`;
           }
           setSetupError(`Database Error: ${errorResult.error || "Unknown error occurred"}${extraInfo}`)
         })
