@@ -1,0 +1,38 @@
+
+// ... existing code ...
+
+export async function ensureSchemaCompatibility() {
+  try {
+    // Self-healing schema for 'leads' table
+    // We try to add columns one by one. If they exist, it's fine (IF NOT EXISTS).
+    // This runs raw SQL against WHATEVER database is connected.
+    await db.execute(sql`
+      ALTER TABLE leads 
+      ADD COLUMN IF NOT EXISTS lead_source text,
+      ADD COLUMN IF NOT EXISTS customer_name text,
+      ADD COLUMN IF NOT EXISTS phone text,
+      ADD COLUMN IF NOT EXISTS email text,
+      ADD COLUMN IF NOT EXISTS destination text,
+      ADD COLUMN IF NOT EXISTS travel_dates text,
+      ADD COLUMN IF NOT EXISTS no_of_pax integer,
+      ADD COLUMN IF NOT EXISTS no_of_staff integer,
+      ADD COLUMN IF NOT EXISTS lead_guest_name text,
+      ADD COLUMN IF NOT EXISTS pickup_point text,
+      ADD COLUMN IF NOT EXISTS budget numeric,
+      ADD COLUMN IF NOT EXISTS special_requirements text,
+      ADD COLUMN IF NOT EXISTS assigned_to uuid,
+      ADD COLUMN IF NOT EXISTS priority text DEFAULT 'medium',
+      ADD COLUMN IF NOT EXISTS notes text,
+      ADD COLUMN IF NOT EXISTS created_by uuid;
+    `);
+    
+    // Also check 'users' table or others if needed, but 'leads' was the main crasher.
+    
+    console.log("✅ Schema compatibility check passed (columns added if missing).");
+    return { success: true };
+  } catch (error: any) {
+    console.error("❌ Schema auto-fix failed:", error);
+    // Don't crash the app if this fails, just log it.
+    return { success: false, error: error.message };
+  }
+}

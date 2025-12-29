@@ -9,19 +9,16 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not defined');
 }
 
-// Use Transaction Pooler (port 6543) for Vercel/Serverless to connection stability
-const originalUrl = process.env.DATABASE_URL || "";
-const poolerUrl = originalUrl.replace(":5432", ":6543");
+// Use Supabase connection pooler (port 6543) for serverless
+const connectionString = (process.env.DATABASE_URL || "").replace(":5432", ":6543");
 
 const pool = new Pool({
-    connectionString: poolerUrl,
+    connectionString,
     ssl: { rejectUnauthorized: false },
-    max: 1, // Limit to 1 connection per serverless function instance to prevent exhaustion
-    connectionTimeoutMillis: 5000, // Fail fast if connection takes too long
-    idleTimeoutMillis: 20000, // Close idle connections to free up resources
+    max: 1,
+    connectionTimeoutMillis: 10000,
+    idleTimeoutMillis: 20000,
 });
 
-// Export the URL effectively used so we can debug which one caused the error
-export const usedDbUrl = poolerUrl;
-
+export const usedDbUrl = connectionString;
 export const db = drizzle(pool, { schema });
