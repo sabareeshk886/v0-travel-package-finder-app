@@ -9,8 +9,8 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not defined');
 }
 
-// Use Supabase connection pooler (port 6543) for serverless
-const connectionString = (process.env.DATABASE_URL || "").replace(":5432", ":6543");
+// Use the DATABASE_URL directly - Neon handles connection pooling automatically
+const connectionString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString,
