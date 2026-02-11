@@ -157,7 +157,7 @@ export default function LeadsPage() {
                     <div className="flex-1 space-y-3">
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="text-lg font-semibold">{lead.customer_name}</h3>
+                          <h3 className="text-lg font-semibold">{lead.customerName}</h3>
                           <div className="flex flex-wrap gap-2 mt-2">
                             <span
                               className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(lead.status)}`}
@@ -189,13 +189,13 @@ export default function LeadsPage() {
                             <span>{lead.destination}</span>
                           </div>
                         )}
-                        {lead.travel_dates && (
+                        {lead.travelDates && (
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
-                            <span>{lead.travel_dates}</span>
+                            <span>{lead.travelDates}</span>
                           </div>
                         )}
-                        {lead.assigned_to_name && (
+                        {lead.assignedToName && (
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4" />
                             <span>
@@ -204,11 +204,11 @@ export default function LeadsPage() {
                                 onClick={(e) => {
                                   e.preventDefault()
                                   e.stopPropagation()
-                                  setAssignedToFilter(lead.assigned_to_name)
+                                  setAssignedToFilter(lead.assignedToName)
                                 }}
                                 className="text-primary hover:underline font-medium"
                               >
-                                {lead.assigned_to_name}
+                                {lead.assignedToName}
                               </button>
                             </span>
                           </div>
@@ -216,8 +216,8 @@ export default function LeadsPage() {
                       </div>
                     </div>
                     <div className="text-right text-sm text-muted-foreground">
-                      <p>Created {new Date(lead.created_at).toLocaleDateString()}</p>
-                      {lead.no_of_pax && <p className="mt-1">{lead.no_of_pax} travelers</p>}
+                      <p>Created {new Date(lead.createdAt).toLocaleDateString()}</p>
+                      {lead.noOfPax && <p className="mt-1">{lead.noOfPax} travelers</p>}
                       {lead.budget && <p className="mt-1">Budget: ₹{lead.budget.toLocaleString()}</p>}
                     </div>
                   </div>
