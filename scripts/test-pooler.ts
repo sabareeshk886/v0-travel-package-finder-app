@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 
 // Original URL: postgresql://postgres:Jyothi%409947794714@db.ymytrwjuejmacmogwwfo.supabase.co:5432/postgres
 // Replacing 5432 with 6543 for Transaction Pooler
-const connectionString = "postgresql://postgres:Jyothi%409947794714@db.ymytrwjuejmacmogwwfo.supabase.co:6543/postgres";
+const connectionString = "postgresql://postgres:Sabareesh%4099@db.ymytrwjuejmacmogwwfo.supabase.co:6543/postgres";
 
 async function main() {
     // PgBouncer often requires no SSL verification or specific SSL modes. We try relaxed SSL.

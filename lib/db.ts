@@ -9,13 +9,13 @@ if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not defined');
 }
 
-// Use the DATABASE_URL directly - Neon handles connection pooling automatically
+// Use the DATABASE_URL directly - Supabase PostgreSQL connection
 const connectionString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString,
     ssl: { rejectUnauthorized: false },
-    max: 1,
+    max: 10,
     connectionTimeoutMillis: 10000,
     idleTimeoutMillis: 20000,
 });
