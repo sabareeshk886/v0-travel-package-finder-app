@@ -137,9 +137,7 @@ export async function createLead(leadData: any) {
     if (leadData.budget) mappedData.budget = leadData.budget
     if (leadData.special_requirements) mappedData.specialRequirements = leadData.special_requirements
     if (leadData.notes) mappedData.notes = leadData.notes
-
-    // Skip assigned_to_name for now (would need user UUID lookup)
-    // If we had a users table, we'd look up the UUID by name here
+    if (leadData.assigned_to_name) mappedData.assignedToName = leadData.assigned_to_name
 
     const [newLead] = await db.insert(leads).values(mappedData).returning()
     revalidatePath("/crm/leads")

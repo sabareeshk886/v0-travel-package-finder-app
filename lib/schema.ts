@@ -213,6 +213,7 @@ export const leads = pgTable('leads', {
     specialRequirements: text('special_requirements'),
     status: text('status').default('new').notNull(),
     assignedTo: uuid('assigned_to').references(() => users.id),
+    assignedToName: text('assigned_to_name'), // Staff member name (ANEES, OFFICE, etc.)
     priority: text('priority').default('medium'),
     notes: text('notes'),
     createdBy: uuid('created_by').references(() => users.id),
