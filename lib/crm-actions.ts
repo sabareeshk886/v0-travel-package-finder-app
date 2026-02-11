@@ -117,7 +117,31 @@ export async function getLeads(filters?: {
 
 export async function createLead(leadData: any) {
   try {
-    const [newLead] = await db.insert(leads).values(leadData).returning()
+    // Map snake_case form fields to camelCase schema fields
+    const mappedData: any = {
+      leadSource: leadData.lead_source,
+      customerName: leadData.customer_name,
+      phone: leadData.phone,
+      status: leadData.status || 'new',
+      priority: leadData.priority || 'medium',
+    }
+
+    // Add optional fields only if they exist
+    if (leadData.email) mappedData.email = leadData.email
+    if (leadData.destination) mappedData.destination = leadData.destination
+    if (leadData.travel_dates) mappedData.travelDates = leadData.travel_dates
+    if (leadData.no_of_pax) mappedData.noOfPax = leadData.no_of_pax
+    if (leadData.no_of_staff) mappedData.noOfStaff = leadData.no_of_staff
+    if (leadData.lead_guest_name) mappedData.leadGuestName = leadData.lead_guest_name
+    if (leadData.pickup_point) mappedData.pickupPoint = leadData.pickup_point
+    if (leadData.budget) mappedData.budget = leadData.budget
+    if (leadData.special_requirements) mappedData.specialRequirements = leadData.special_requirements
+    if (leadData.notes) mappedData.notes = leadData.notes
+
+    // Skip assigned_to_name for now (would need user UUID lookup)
+    // If we had a users table, we'd look up the UUID by name here
+
+    const [newLead] = await db.insert(leads).values(mappedData).returning()
     revalidatePath("/crm/leads")
     return { success: true, data: newLead }
   } catch (error: any) {
